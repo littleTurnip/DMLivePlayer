@@ -129,7 +129,7 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
       }
     case .paused:
       Task { @MainActor in
-        refreshStream()
+//        refreshStream()
       }
     case .playedToTheEnd:
       break
