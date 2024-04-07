@@ -11,6 +11,7 @@ let package = Package(
   products: [
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(name: "DMLPlayer", targets: ["DMLPlayer"]),
+    .library(name: "DanmakuKit", targets: ["DanmakuKit"]),
     .library(name: "DMLPlayerProtocol", targets: ["DMLPlayerProtocol"]),
   ],
   dependencies: [
@@ -25,6 +26,9 @@ let package = Package(
         "DMLPlayerProtocol",
         .ksplayer,
       ]
+    ),
+    .target(
+      name: "DanmakuKit"
     ),
     .target(
       name: "DMLPlayerProtocol"
