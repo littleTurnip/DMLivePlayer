@@ -173,7 +173,7 @@ private let consoleFont = Font.system(size: 24).monospaced()
 private let overlayGradient = LinearGradient(
   stops: [
     Gradient.Stop(color: .black.opacity(0), location: 0.22),
-    Gradient.Stop(color: .black.opacity(0.6), location: 1),
+    Gradient.Stop(color: .black.opacity(0.7), location: 1),
   ],
   startPoint: .top,
   endPoint: .bottom
