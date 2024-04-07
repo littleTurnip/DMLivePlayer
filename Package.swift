@@ -15,6 +15,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/littleTurnip/KSPlayer.git", exact: "1.0.0"),
+    .package(path: "../DanmakuKit"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -24,6 +25,7 @@ let package = Package(
       dependencies: [
         "DMLPlayerProtocol",
         .ksplayer,
+        .danmakuKit,
       ]
     ),
     .target(
