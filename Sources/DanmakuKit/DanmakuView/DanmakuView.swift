@@ -216,7 +216,7 @@ public class DanmakuView: UIView {
 
     for i in (0 ..< subviews.count).reversed() {
       let subView = subviews[i]
-      var newPoint: CGPoint = if subView.layer.animationKeys() != nil, let presentationLayer = subView.layer.presentation() {
+      let newPoint: CGPoint = if subView.layer.animationKeys() != nil, let presentationLayer = subView.layer.presentation() {
         layer.convert(point, to: presentationLayer)
       } else {
         convert(point, to: subView)
