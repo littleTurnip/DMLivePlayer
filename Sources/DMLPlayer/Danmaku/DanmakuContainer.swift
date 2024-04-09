@@ -44,13 +44,11 @@ public struct DanmakuOptions {
 // MARK: - DanmakuCoordinator
 
 public class DanmakuCoordinator: ObservableObject, DanmakuViewDelegate, @unchecked Sendable {
-  var option: DanmakuOptions
   var danmakuService: DanmakuService?
   var uiView: DanmakuView?
 
-  init(service: DanmakuService?, option: DanmakuOptions) {
+  init(service: DanmakuService? = nil) {
     danmakuService = service
-    self.option = option
   }
 
   deinit {
@@ -90,8 +88,9 @@ extension DanmakuCoordinator: DanmakuDelegate {
 // MARK: - DanmakuContainer
 
 struct DanmakuContainer: UIViewRepresentable {
-  @ObservedObject
+  @StateObject
   var coordinator: DanmakuCoordinator
+  var service: DanmakuService?
   let options: DanmakuOptions
 
   func makeCoordinator() -> DanmakuCoordinator {
@@ -109,7 +108,8 @@ struct DanmakuContainer: UIViewRepresentable {
     let uiView = context.coordinator.uiView
 
     uiView?.play()
-    if context.coordinator.option.isDanmakuAutoPlay {
+    if options.isDanmakuAutoPlay {
+      context.coordinator.danmakuService = service
       context.coordinator.startDanmakuStream(options: options)
     }
     return uiView!
@@ -119,6 +119,7 @@ struct DanmakuContainer: UIViewRepresentable {
 
   func dismantleUIView(_ uiView: DanmakuView, coordinator: DanmakuCoordinator) {
     coordinator.stopDanmakuStream()
+    coordinator.danmakuService = nil
     uiView.stop()
   }
 }

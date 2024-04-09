@@ -23,8 +23,8 @@ struct VideoControllerView<Title: View, Source: View>: View {
     @ViewBuilder source: () -> Source
   ) {
     self.viewmodel = viewmodel
-    self.titleView = title()
-    self.sourceView = source()
+    titleView = title()
+    sourceView = source()
   }
 
   public var body: some View {
@@ -36,9 +36,11 @@ struct VideoControllerView<Title: View, Source: View>: View {
       HStack(alignment: .center, spacing: 20) {
         sourceView
         Button(action: viewmodel.toggleFav) {
-          viewmodel.isFav
-            ? Image(systemName: "star.fill").foregroundColor(.yellow)
-            : Image(systemName: "star").foregroundColor(.secondary)
+          if let item = viewmodel.item {
+            item.playerInfo.isFav
+              ? Image(systemName: "star.fill").foregroundColor(.yellow)
+              : Image(systemName: "star").foregroundColor(.secondary)
+          }
         }
         .disabled(!viewmodel.isOverlayVisible)
         Button(action: viewmodel.refreshStream, label: {
@@ -66,7 +68,7 @@ struct VideoControllerView<Title: View, Source: View>: View {
       let content = {
         ForEach(stream.rateList, id: \.id) { rate in
           Button(
-            action: { viewmodel.item.loadStream(line: stream.line, rate: rate.id) },
+            action: { viewmodel.item?.loadResource(line: stream.line, rate: rate.id) },
             label: {
               Text(rate.resolution)
             }
@@ -95,7 +97,7 @@ struct VideoControllerView<Title: View, Source: View>: View {
       let content = {
         ForEach(stream.cdnList, id: \.id) { line in
           Button(
-            action: { viewmodel.item.loadStream(line: line.id, rate: stream.rate) },
+            action: { viewmodel.item?.loadResource(line: line.id, rate: stream.rate) },
             label: {
               HStack {
                 if line.id == stream.line { Image(systemName: "checkmark") }
@@ -151,9 +153,9 @@ struct VideoControllerView<Title: View, Source: View>: View {
 
   private var mediaInfo: some View {
     Group {
-      Text("id: \(viewmodel.item.id)")
-      Text("helperID: \(viewmodel.item.helperID ?? "N/A")")
-      Text("playCount: \(viewmodel.item.playCount)")
+      Text("id: \(viewmodel.item?.id ?? "N/A")")
+      Text("helperID: \(viewmodel.item?.helperID ?? "N/A")")
+      Text("playCount: \(viewmodel.item?.playerInfo.playCount ?? 0)")
       Text("line: \(viewmodel.streamResource?.line ?? "N/A")")
       Text("rate: \(viewmodel.streamResource?.rate ?? 0)")
       if let videoinfo = viewmodel.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled })?.formatDescription {

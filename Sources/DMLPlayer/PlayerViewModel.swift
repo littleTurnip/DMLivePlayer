@@ -54,16 +54,16 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
   private var retryCount = 0
   private let maxRetryCount = 3
 
-  public var item: any PlayableItem
-  let playerCoordinator: KSVideoPlayer.Coordinator
-  let playerOptions: PlayerOptions
-  let danmakuCoordinator: DanmakuCoordinator
-  let danmakuOptions: DanmakuOptions
+  public var item: (any PlayableItem)?
+  @MainActor
+  let playerCoordinator = KSVideoPlayer.Coordinator()
+  let danmakuCoordinator = DanmakuCoordinator()
+  public var playerOptions: PlayerOptions
+  public var danmakuOptions: DanmakuOptions
+  public var danmakuService: DanmakuService?
 
-  @Published var streamResource: (any PlayerResource)?
-  @Published var isFav: Bool
-  @Published var savedCDN: String?
-  @Published var isLoading = true
+  @Published var streamResource: (any LiveResource)?
+
   @Published var isOverlayVisible = true
   @Published var isMenuVisible = false
   @Published var isInfoVisible = false
@@ -71,16 +71,10 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
 
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
-  @MainActor
-  public init(_ item: PlayableItem, playerOptions: PlayerOptions, danmakuService: DanmakuService?, danmakuOptions: DanmakuOptions) {
-    self.item = item
-    streamResource = item.currentResource
-    playerCoordinator = KSVideoPlayer.Coordinator()
+  public init(playerOptions: PlayerOptions, danmakuOptions: DanmakuOptions) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.isDanmakuAutoPlay
-    danmakuCoordinator = DanmakuCoordinator(service: danmakuService, option: danmakuOptions)
-    isFav = item.isFav
     subscribeResource()
   }
 
@@ -88,10 +82,26 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
     logger.trace("PlayerViewModel deinit")
   }
 
+  public func updateItem(_ newItem: any PlayableItem) {
+    danmakuService = nil
+    item = newItem
+    streamResource = newItem.currentResource
+    danmakuService = newItem.danmakuService
+    subscribeResource()
+  }
+
+  public func updateOptions(options: (PlayerOptions, DanmakuOptions)) {
+    playerOptions = options.0
+    danmakuOptions = options.1
+  }
+
   func subscribeResource() {
+    guard let item else {
+      return
+    }
     Task {
       for await resource in item.resourceStream {
-        DispatchQueue.main.async { [weak self] in
+        await MainActor.run { [weak self] in
           self?.logger.trace("resourceStream got")
           self?.streamResource = resource
         }
@@ -120,16 +130,13 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
       break
     case .buffering:
       Task { @MainActor in
-        isLoading = true
       }
     case .bufferFinished:
       Task { @MainActor in
-        isLoading = false
-        savedCDN = streamResource?.line
+        item?.setCDNLine()
       }
     case .paused:
       Task { @MainActor in
-//        refreshStream()
       }
     case .playedToTheEnd:
       break
@@ -142,9 +149,9 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
       }
       Task { @MainActor in
         if retryStreamIndex >= stream.cdnList.count {
-          item.loadStream(line: stream.cdnList[0].id, rate: stream.rate)
+          item?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
         } else {
-          item.loadStream(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
+          item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
         }
       }
     }
@@ -222,20 +229,18 @@ extension PlayerViewModel {
     }
   }
 
-  func saveInfoChange() {
-    item.playCount += 1
-    item.isFav = isFav
-    item.lastPlayTime = Date()
-    item.savedCDN = savedCDN
-    item.update()
+  func updateItem() {
+    item?.plusPlayCount()
+    item?.setLastPlayTime()
+    item?.update()
   }
 
   func refreshStream() {
-    item.loadStream(line: streamResource?.line, rate: streamResource?.rate)
+    item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
   }
 
   func toggleFav() {
-    logger.trace("toggleFav")
-    isFav.toggle()
+    item?.toggleFav()
+    item?.update()
   }
 }

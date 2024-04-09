@@ -12,16 +12,13 @@ public struct DMLPlayerView<Title: View, Source: View>: View {
   @Environment(\.dismiss)
   private var dismiss
 
-  @StateObject var vm: PlayerViewModel
+  @EnvironmentObject var vm: PlayerViewModel
   private let titleView: Title
   private let sourceView: Source
   public init(
-    _ item: any PlayableItem,
-    viewmodelFactory: @escaping (any PlayableItem) -> PlayerViewModel,
     @ViewBuilder title: @escaping () -> Title,
     @ViewBuilder source: @escaping () -> Source
   ) {
-    _vm = StateObject(wrappedValue: viewmodelFactory(item))
     titleView = title()
     sourceView = source()
   }
@@ -50,6 +47,7 @@ public struct DMLPlayerView<Title: View, Source: View>: View {
       .zIndex(vm.controlletrZIndex)
       DanmakuContainer(
         coordinator: vm.danmakuCoordinator,
+        service: vm.danmakuService,
         options: vm.danmakuOptions
       )
       .allowsHitTesting(false)
@@ -61,7 +59,7 @@ public struct DMLPlayerView<Title: View, Source: View>: View {
     .onPlayPauseCommand(perform: vm.refreshStream)
     .onExitCommand { vm.isOverlayVisible ? vm.hideOverlay() : dismiss() }
     .onDisappear {
-      vm.saveInfoChange()
+      vm.updateItem()
       Task { await vm.destroy() }
     }
   }
