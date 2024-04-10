@@ -35,11 +35,7 @@ let package = Package(
       dependencies: [
         .ksplayer,
       ]
-    ),
-    .testTarget(
-      name: "DMLPlayerTests",
-      dependencies: ["DMLPlayer"]
-    ),
+    )
   ]
 )
 

@@ -12,17 +12,17 @@ import SwiftUI
 
 @available(tvOS 16, *)
 struct VideoControllerView<Title: View, Source: View>: View {
-  @ObservedObject var viewmodel: PlayerViewModel
+  @ObservedObject var manager: PlayerManager
   @FocusState var controllerFocused
 
   private let titleView: Title
   private let sourceView: Source
   init(
-    viewmodel: PlayerViewModel,
+    manager: PlayerManager,
     @ViewBuilder title: () -> Title,
     @ViewBuilder source: () -> Source
   ) {
-    self.viewmodel = viewmodel
+    self.manager = manager
     titleView = title()
     sourceView = source()
   }
@@ -30,23 +30,23 @@ struct VideoControllerView<Title: View, Source: View>: View {
   public var body: some View {
     VStack(alignment: .leading) {
       ProgressView()
-        .opacity(viewmodel.playerCoordinator.state == .bufferFinished ? 0 : 1)
+        .opacity(manager.playerCoordinator.state == .bufferFinished ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       titleView
       HStack(alignment: .center, spacing: 20) {
         sourceView
-        Button(action: viewmodel.toggleFav) {
-          if let item = viewmodel.item {
+        Button(action: manager.toggleFav) {
+          if let item = manager.item {
             item.playerInfo.isFav
               ? Image(systemName: "star.fill").foregroundColor(.yellow)
               : Image(systemName: "star").foregroundColor(.secondary)
           }
         }
-        .disabled(!viewmodel.isOverlayVisible)
-        Button(action: viewmodel.refreshStream, label: {
+        .disabled(!manager.isOverlayVisible)
+        Button(action: manager.refreshStream, label: {
           Image(systemName: "arrow.clockwise")
         })
-        .disabled(!viewmodel.isOverlayVisible)
+        .disabled(!manager.isOverlayVisible)
         Spacer()
         Group {
           resourceMenu
@@ -63,12 +63,12 @@ struct VideoControllerView<Title: View, Source: View>: View {
 
   @ViewBuilder
   private var resourceMenu: some View {
-    if let stream = viewmodel.streamResource {
+    if let stream = manager.streamResource {
       let label = { Text(stream.resolution) }
       let content = {
         ForEach(stream.rateList, id: \.id) { rate in
           Button(
-            action: { viewmodel.item?.loadResource(line: stream.line, rate: rate.id) },
+            action: { manager.item?.loadResource(line: stream.line, rate: rate.id) },
             label: {
               Text(rate.resolution)
             }
@@ -79,8 +79,8 @@ struct VideoControllerView<Title: View, Source: View>: View {
       if #available(tvOS 17, *) {
         Menu(content: content, label: label)
       } else {
-        Button(action: viewmodel.toggleResMenu, label: label)
-          .fullScreenCover(isPresented: $viewmodel.isMenuVisible) {
+        Button(action: manager.toggleResMenu, label: label)
+          .fullScreenCover(isPresented: $manager.isMenuVisible) {
             CustomMenu(content: content)
           }
       }
@@ -92,12 +92,12 @@ struct VideoControllerView<Title: View, Source: View>: View {
 
   @ViewBuilder
   private var lineMenu: some View {
-    if let stream = viewmodel.streamResource {
+    if let stream = manager.streamResource {
       let label = { Image(systemName: "waveform") }
       let content = {
         ForEach(stream.cdnList, id: \.id) { line in
           Button(
-            action: { viewmodel.item?.loadResource(line: line.id, rate: stream.rate) },
+            action: { manager.item?.loadResource(line: line.id, rate: stream.rate) },
             label: {
               HStack {
                 if line.id == stream.line { Image(systemName: "checkmark") }
@@ -111,8 +111,8 @@ struct VideoControllerView<Title: View, Source: View>: View {
       if #available(tvOS 17, *) {
         Menu(content: content, label: label)
       } else {
-        Button(action: viewmodel.toggleResMenu, label: label)
-          .fullScreenCover(isPresented: $viewmodel.isMenuVisible) {
+        Button(action: manager.toggleResMenu, label: label)
+          .fullScreenCover(isPresented: $manager.isMenuVisible) {
             CustomMenu(content: content)
           }
       }
@@ -124,9 +124,9 @@ struct VideoControllerView<Title: View, Source: View>: View {
 
   private var danmakuToggle: some View {
     Button(
-      action: viewmodel.toggleDanmaku,
+      action: manager.toggleDanmaku,
       label: {
-        viewmodel.isDanmakuVisible
+        manager.isDanmakuVisible
           ? Image(systemName: "list.bullet.rectangle.fill")
           : Image(systemName: "list.bullet.rectangle")
       }
@@ -135,10 +135,10 @@ struct VideoControllerView<Title: View, Source: View>: View {
 
   private var infoPanel: some View {
     Button(
-      action: viewmodel.toggleInfo,
+      action: manager.toggleInfo,
       label: { Image(systemName: "info.circle") }
     )
-    .fullScreenCover(isPresented: $viewmodel.isInfoVisible) {
+    .fullScreenCover(isPresented: $manager.isInfoVisible) {
       ZStack {
         VStack(alignment: .leading) { mediaInfo }
           .frame(maxWidth: 500, alignment: .topLeading)
@@ -153,16 +153,16 @@ struct VideoControllerView<Title: View, Source: View>: View {
 
   private var mediaInfo: some View {
     Group {
-      Text("id: \(viewmodel.item?.id ?? "N/A")")
-      Text("helperID: \(viewmodel.item?.helperID ?? "N/A")")
-      Text("playCount: \(viewmodel.item?.playerInfo.playCount ?? 0)")
-      Text("line: \(viewmodel.streamResource?.line ?? "N/A")")
-      Text("rate: \(viewmodel.streamResource?.rate ?? 0)")
-      if let videoinfo = viewmodel.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled })?.formatDescription {
+      Text("id: \(manager.item?.id ?? "N/A")")
+      Text("helperID: \(manager.item?.helperID ?? "N/A")")
+      Text("playCount: \(manager.item?.playerInfo.playCount ?? 0)")
+      Text("line: \(manager.streamResource?.line ?? "N/A")")
+      Text("rate: \(manager.streamResource?.rate ?? 0)")
+      if let videoinfo = manager.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled })?.formatDescription {
         Text("Video Codec: \(videoinfo.mediaSubType.description)")
         Text("Resolution: \(videoinfo.dimensions.width) x \(videoinfo.dimensions.height)")
       }
-      if let info = viewmodel.playerCoordinator.playerLayer?.player.dynamicInfo {
+      if let info = manager.playerCoordinator.playerLayer?.player.dynamicInfo {
         Text("FPS: \(String(format: "%.2f", info.displayFPS))")
         Text("Video Bitrate: \(info.videoBitrate.bytesToMegabytes()) MB/s")
         Text("Audio Bitrate: \(info.audioBitrate.bytesToKilobytes()) KB/s")
