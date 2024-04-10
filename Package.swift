@@ -31,7 +31,10 @@ let package = Package(
       name: "DanmakuKit"
     ),
     .target(
-      name: "DMLPlayerProtocol"
+      name: "DMLPlayerProtocol",
+      dependencies: [
+        .ksplayer,
+      ]
     ),
     .testTarget(
       name: "DMLPlayerTests",
