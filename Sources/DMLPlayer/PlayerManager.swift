@@ -4,50 +4,15 @@
 //
 //  Created by littleTurnip on 9/27/23.
 //
-import AVFoundation
-#if os(tvOS)
-  import DisplayCriteria
-#endif
+
 import DMLPlayerProtocol
 import KSPlayer
 import OSLog
 import SwiftUI
 
-public typealias PlayerProtocol = MediaPlayerProtocol
-public typealias MEPlayer = KSMEPlayer
-public typealias AVPlayer = KSAVPlayer
+// MARK: - PlayerManager
 
-// MARK: - PlayerOptions
-
-public class PlayerOptions: KSOptions {
-  public var isDisplayCriteriaEnabled: Bool = false
-
-  override public func sei(string: String) {}
-  override public func updateVideo(refreshRate: Float, isDovi: Bool, formatDescription: CMFormatDescription?) {
-    Task { @MainActor in
-      guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-            let displayManager = windowScene.windows.first?.avDisplayManager,
-            isDisplayCriteriaEnabled,
-            displayManager.isDisplayCriteriaMatchingEnabled
-      else {
-        return
-      }
-      if let formatDescription {
-        if #available(tvOS 17.0, *),
-           KSOptions.displayCriteriaFormatDescriptionEnabled {
-          displayManager.preferredDisplayCriteria = AVDisplayCriteria(refreshRate: refreshRate, formatDescription: formatDescription)
-        } else {
-          let dynamicRange = isDovi ? .dolbyVision : formatDescription.dynamicRange
-          displayManager.preferredDisplayCriteria = AVDisplayCriteria(refreshRate: refreshRate, videoDynamicRange: dynamicRange.rawValue)
-        }
-      }
-    }
-  }
-}
-
-// MARK: - PlayerViewModel
-
-public class PlayerViewModel: ObservableObject, @unchecked Sendable {
+public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
   private var overlayTask: Task<Void, Never>?
   private var retryStreamIndex = -1
@@ -56,8 +21,8 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
 
   public var item: (any PlayableItem)?
   @MainActor
-  let playerCoordinator = KSVideoPlayer.Coordinator()
-  let danmakuCoordinator = DanmakuCoordinator()
+  public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
+  public let danmakuCoordinator: DanmakuCoordinator = DanmakuContainer.Coordinator()
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
   public var danmakuService: DanmakuService?
@@ -90,15 +55,13 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
     subscribeResource()
   }
 
-  public func updateOptions(options: (PlayerOptions, DanmakuOptions)) {
+  public func updateOptions(_ options: (PlayerOptions, DanmakuOptions)) {
     playerOptions = options.0
     danmakuOptions = options.1
   }
 
   func subscribeResource() {
-    guard let item else {
-      return
-    }
+    guard let item else { return }
     Task {
       for await resource in item.resourceStream {
         await MainActor.run { [weak self] in
@@ -207,7 +170,7 @@ public class PlayerViewModel: ObservableObject, @unchecked Sendable {
 
 // MARK: - methods of Controller
 
-extension PlayerViewModel {
+extension PlayerManager {
   func toggleResMenu() {
     guard isOverlayVisible else { return }
     isMenuVisible.toggle()
