@@ -5,6 +5,7 @@
 //  Created by littleTurnip on 3/1/24.
 //
 
+import DanmakuKit
 import UIKit
 
 // MARK: - Danmaku
@@ -27,4 +28,12 @@ public protocol DanmakuService: Actor {
   func clearDanmakuHandler()
   func start()
   func stop()
+}
+
+// MARK: - DanmakuDelegate
+
+public protocol DanmakuDelegate: DanmakuViewDelegate, Sendable {
+  func startDanmakuStream(options: DanmakuOptions)
+  func stopDanmakuStream()
+  @Sendable func shootDanmaku(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) async
 }

@@ -34,11 +34,6 @@ public protocol PlayableItem: ObservableObject, Identifiable {
 
   // MARK: - local properties
 
-//  var isFav: Bool { get set }
-//  var savedCDN: String? { get set }
-//  var playCount: Int { get set }
-//  var lastPlayTime: Date { get set }
-
   var playerInfo: PlayInfo { get set }
   var currentResource: LiveResource? { get set }
   var danmakuService: DanmakuService? { get }
@@ -48,7 +43,7 @@ public protocol PlayableItem: ObservableObject, Identifiable {
   init(playerArgs: PlayInfo?, with liveInfo: LiveInfo)
 
   func update()
-
+  func play(with player: any PlayerProtocol)
   /// method to update livestream resource
   /// - Parameter newResource: `PlayerResource` object
   func updateResource(with newResource: LiveResource?)

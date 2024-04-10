@@ -12,7 +12,7 @@ public struct DMLPlayerView<Title: View, Source: View>: View {
   @Environment(\.dismiss)
   private var dismiss
 
-  @EnvironmentObject var vm: PlayerViewModel
+  @EnvironmentObject var manager: PlayerManager
   private let titleView: Title
   private let sourceView: Source
   public init(
@@ -25,42 +25,42 @@ public struct DMLPlayerView<Title: View, Source: View>: View {
 
   public var body: some View {
     ZStack(alignment: .bottom) {
-      if let url = vm.streamResource?.url {
+      if let url = manager.streamResource?.url {
         KSVideoPlayer(
-          coordinator: vm.playerCoordinator,
+          coordinator: manager.playerCoordinator,
           url: url,
-          options: vm.playerOptions
+          options: manager.playerOptions
         )
-        .onStateChanged(vm.handlePlayerStateChanged)
-        .onSwipe(vm.handleSwipe)
-        .onAppear { vm.showOverlay() }
+        .onStateChanged(manager.handlePlayerStateChanged)
+        .onSwipe(manager.handleSwipe)
+        .onAppear { manager.showOverlay() }
         .background(Color.black)
         .ignoresSafeArea(.all)
         .zIndex(1)
       }
       VideoControllerView(
-        viewmodel: vm,
+        manager: manager,
         title: { titleView },
         source: { sourceView }
       )
-      .opacity(vm.isOverlayVisible ? 1 : 0)
-      .zIndex(vm.controlletrZIndex)
+      .opacity(manager.isOverlayVisible ? 1 : 0)
+      .zIndex(manager.controlletrZIndex)
       DanmakuContainer(
-        coordinator: vm.danmakuCoordinator,
-        service: vm.danmakuService,
-        options: vm.danmakuOptions
+        coordinator: manager.danmakuCoordinator as! DanmakuContainer.Coordinator,
+        service: manager.danmakuService,
+        options: manager.danmakuOptions
       )
       .allowsHitTesting(false)
       .ignoresSafeArea(.all)
       .zIndex(2)
     }
     .preferredColorScheme(.dark)
-    .onMoveCommand(perform: vm.handleKey)
-    .onPlayPauseCommand(perform: vm.refreshStream)
-    .onExitCommand { vm.isOverlayVisible ? vm.hideOverlay() : dismiss() }
+    .onMoveCommand(perform: manager.handleKey)
+    .onPlayPauseCommand(perform: manager.refreshStream)
+    .onExitCommand { manager.isOverlayVisible ? manager.hideOverlay() : dismiss() }
     .onDisappear {
-      vm.updateItem()
-      Task { await vm.destroy() }
+      manager.updateItem()
+      Task { await manager.destroy() }
     }
   }
 }
