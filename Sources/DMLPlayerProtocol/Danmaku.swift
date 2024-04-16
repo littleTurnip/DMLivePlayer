@@ -23,6 +23,7 @@ public typealias DanmakuHandler = @Sendable (Danmaku) async -> Void
 // MARK: - DanmakuService
 
 public protocol DanmakuService: Actor {
+  var id: String { get }
   var onDanmakuReceived: DanmakuHandler? { get set }
   func setDanmakuHandler(_ handler: @escaping DanmakuHandler)
   func clearDanmakuHandler()
@@ -33,6 +34,8 @@ public protocol DanmakuService: Actor {
 // MARK: - DanmakuDelegate
 
 public protocol DanmakuDelegate: DanmakuViewDelegate, Sendable {
+  func setDanmakuService(_ service: DanmakuService?)
+  func cleanDanmakuService()
   func startDanmakuStream(options: DanmakuOptions)
   func stopDanmakuStream()
   @Sendable func shootDanmaku(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) async
