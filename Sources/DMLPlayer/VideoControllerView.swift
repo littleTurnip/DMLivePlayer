@@ -8,6 +8,13 @@
 import KSPlayer
 import SwiftUI
 
+// MARK: - ControllerFocusState
+
+enum ControllerFocusState {
+  case controller
+  case recommend
+}
+
 // MARK: - VideoControllerView
 
 @available(tvOS 16, *)
@@ -15,7 +22,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   @EnvironmentObject var manager: PlayerManager
   @State private var isLineMenuVisible = false
   @State private var isResMenuVisible = false
-  @FocusState var controllerFocused
+  @FocusState var controllerFocused: ControllerFocusState?
 
   private let title: Title
   private let info: Info
@@ -30,6 +37,33 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
     self.recommend = recommend()
   }
 
+  public var body: some View {
+    VStack(alignment: .leading) {
+      ProgressView()
+        .opacity(manager.playerCoordinator.state == .bufferFinished ? 0 : 1)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+      title
+      controller
+        .focusSection()
+        .focused($controllerFocused, equals: .controller)
+      recommend
+        .focusSection()
+        .focused($controllerFocused, equals: .recommend)
+    }
+    .background(overlayGradient)
+    .offset(y: manager.isRecommendVisible ? 0 : 240)
+    .onChange(of: controllerFocused) { newFocus in
+      switch newFocus {
+      case .controller:
+        manager.isRecommendVisible = false
+      case .recommend:
+        manager.isRecommendVisible = true
+      case .none:
+        break
+      }
+    }
+  }
+
   var controller: some View {
     HStack(alignment: .center, spacing: 20) {
       info
@@ -39,35 +73,17 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
           : Image(systemName: "star").foregroundColor(.secondary)
       }
       .disabled(!manager.isOverlayVisible)
-      Button(action: manager.refreshStream, label: {
+      Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
-      })
+      }
       .disabled(!manager.isOverlayVisible)
       Spacer()
-      Group {
-        resourceMenu
-        danmakuToggle
-        lineMenu
-        infoPanel
-      }
+      resourceMenu
+      lineMenu
+      danmakuToggle
+      infoPanel
     }
-
     .buttonStyle(ControllerButtonStyle())
-  }
-
-  public var body: some View {
-    VStack(alignment: .leading) {
-      ProgressView()
-        .opacity(manager.playerCoordinator.state == .bufferFinished ? 0 : 1)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-      title
-      VStack {
-        controller
-        recommend
-      }
-      .focused($controllerFocused)
-    }
-    .background(overlayGradient)
   }
 
   @ViewBuilder
@@ -184,7 +200,7 @@ private let consoleFont = Font.system(size: 24).monospaced()
 private let overlayGradient = LinearGradient(
   stops: [
     Gradient.Stop(color: .black.opacity(0), location: 0.22),
-    Gradient.Stop(color: .black.opacity(0.7), location: 1),
+    Gradient.Stop(color: .black.opacity(0.9), location: 1),
   ],
   startPoint: .top,
   endPoint: .bottom

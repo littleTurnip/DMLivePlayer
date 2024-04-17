@@ -16,27 +16,22 @@ import SwiftUI
 public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
   private var overlayTask: Task<Void, Never>?
-  private var retryStreamIndex = -1
-  private var retryCount = 0
-  private let maxRetryCount = 3
-
-  @Published
-  public var item: (any PlayableItem)?
-  @Published
-  public var libraryItemList: [any PlayableItem] = []
   private var cancellables: Set<AnyCancellable> = []
-  @Published
-  public var navigateToLive = false
-  @MainActor
-  public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
+  private var retryStreamIndex = -1
+
+  @MainActor public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
   public let danmakuCoordinator: DanmakuCoordinator = DanmakuContainer.Coordinator()
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
+  @Published public var item: (any PlayableItem)?
+  @Published public var libraryItemList: [any PlayableItem] = []
+  @Published public var isVisible = false
+
   @Published var streamResource: (any LiveResource)?
 
   @Published var isOverlayVisible = true
-  @Published var isMenuVisible = false
+  @Published var isRecommendVisible = false
   @Published var isInfoVisible = false
   @Published var isDanmakuVisible: Bool
 
@@ -59,6 +54,7 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     danmakuCoordinator.cleanDanmakuService()
     isDanmakuVisible = false
     playerCoordinator.playerLayer?.pause()
+    item?.update()
     item = newItem
     streamResource = newItem.currentResource
     danmakuCoordinator.setDanmakuService(newItem.danmakuService)
@@ -114,15 +110,13 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     case .readyToPlay:
       break
     case .buffering:
-      Task { @MainActor in
-      }
+      Task { @MainActor in }
     case .bufferFinished:
       Task { @MainActor in
         item?.setCDNLine()
       }
     case .paused:
-      Task { @MainActor in
-      }
+      Task { @MainActor in }
     case .playedToTheEnd:
       break
     case .error:
@@ -150,11 +144,12 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   }
 
   func handleKey(_ move: MoveCommandDirection) {
+    debugPrint("handleKey: \(move)")
     switch move {
     case .up:
       showOverlay()
     case .down:
-      hideOverlay()
+      showOverlay()
     case .left:
       showOverlay()
     case .right:
@@ -193,11 +188,6 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
 // MARK: - methods of Controller
 
 extension PlayerManager {
-  func toggleResMenu() {
-    guard isOverlayVisible else { return }
-    isMenuVisible.toggle()
-  }
-
   func toggleInfo() {
     guard isOverlayVisible else { return }
     isInfoVisible.toggle()
@@ -226,6 +216,7 @@ extension PlayerManager {
 
   func toggleFav() {
     item?.toggleFav()
+    objectWillChange.send()
     item?.update()
   }
 }

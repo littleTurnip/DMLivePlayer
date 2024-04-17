@@ -20,7 +20,7 @@ public protocol PlayerProtocol: ObservableObject {
   var danmakuCoordinator: DanmakuCoordinator { get }
   var playerOptions: PlayerOptions { get set }
   var danmakuOptions: DanmakuOptions { get set }
-  var navigateToLive: Bool { get set }
+  var isVisible: Bool { get set }
 
   func updateItem(_ newItem: any PlayableItem)
   func updateOptions(_ options: (PlayerOptions, DanmakuOptions))
