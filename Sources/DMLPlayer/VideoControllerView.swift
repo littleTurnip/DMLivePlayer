@@ -11,20 +11,46 @@ import SwiftUI
 // MARK: - VideoControllerView
 
 @available(tvOS 16, *)
-struct VideoControllerView<Title: View, Source: View>: View {
-  @ObservedObject var manager: PlayerManager
+struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
+  @EnvironmentObject var manager: PlayerManager
   @FocusState var controllerFocused
 
-  private let titleView: Title
-  private let sourceView: Source
+  private let title: Title
+  private let info: Info
+  private let recommend: Recommend
   init(
-    manager: PlayerManager,
     @ViewBuilder title: () -> Title,
-    @ViewBuilder source: () -> Source
+    @ViewBuilder info: () -> Info,
+    @ViewBuilder recommend: () -> Recommend
   ) {
-    self.manager = manager
-    titleView = title()
-    sourceView = source()
+    self.title = title()
+    self.info = info()
+    self.recommend = recommend()
+  }
+
+  var controller: some View {
+    HStack(alignment: .center, spacing: 20) {
+      info
+      Button(action: manager.toggleFav) {
+        manager.item?.playerInfo.isFav ?? false
+          ? Image(systemName: "star.fill").foregroundColor(.yellow)
+          : Image(systemName: "star").foregroundColor(.secondary)
+      }
+      .disabled(!manager.isOverlayVisible)
+      Button(action: manager.refreshStream, label: {
+        Image(systemName: "arrow.clockwise")
+      })
+      .disabled(!manager.isOverlayVisible)
+      Spacer()
+      Group {
+        resourceMenu
+        danmakuToggle
+        lineMenu
+        infoPanel
+      }
+    }
+
+    .buttonStyle(ControllerButtonStyle())
   }
 
   public var body: some View {
@@ -32,31 +58,12 @@ struct VideoControllerView<Title: View, Source: View>: View {
       ProgressView()
         .opacity(manager.playerCoordinator.state == .bufferFinished ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-      titleView
-      HStack(alignment: .center, spacing: 20) {
-        sourceView
-        Button(action: manager.toggleFav) {
-          if let item = manager.item {
-            item.playerInfo.isFav
-              ? Image(systemName: "star.fill").foregroundColor(.yellow)
-              : Image(systemName: "star").foregroundColor(.secondary)
-          }
-        }
-        .disabled(!manager.isOverlayVisible)
-        Button(action: manager.refreshStream, label: {
-          Image(systemName: "arrow.clockwise")
-        })
-        .disabled(!manager.isOverlayVisible)
-        Spacer()
-        Group {
-          resourceMenu
-          danmakuToggle
-          lineMenu
-          infoPanel
-        }
+      title
+      VStack {
+        controller
+        recommend
       }
       .focused($controllerFocused)
-      .buttonStyle(ControllerButtonStyle())
     }
     .background(overlayGradient)
   }
