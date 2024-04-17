@@ -13,6 +13,8 @@ import SwiftUI
 @available(tvOS 16, *)
 struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   @EnvironmentObject var manager: PlayerManager
+  @State private var isLineMenuVisible = false
+  @State private var isResMenuVisible = false
   @FocusState var controllerFocused
 
   private let title: Title
@@ -86,8 +88,8 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       if #available(tvOS 17, *) {
         Menu(content: content, label: label)
       } else {
-        Button(action: manager.toggleResMenu, label: label)
-          .fullScreenCover(isPresented: $manager.isMenuVisible) {
+        Button(action: { isResMenuVisible.toggle() }, label: label)
+          .fullScreenCover(isPresented: $isResMenuVisible) {
             CustomMenu(content: content)
           }
       }
@@ -118,8 +120,8 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       if #available(tvOS 17, *) {
         Menu(content: content, label: label)
       } else {
-        Button(action: manager.toggleResMenu, label: label)
-          .fullScreenCover(isPresented: $manager.isMenuVisible) {
+        Button(action: { isLineMenuVisible.toggle() }, label: label)
+          .fullScreenCover(isPresented: $isLineMenuVisible) {
             CustomMenu(content: content)
           }
       }
