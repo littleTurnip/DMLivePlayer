@@ -8,23 +8,33 @@
 import KSPlayer
 import SwiftUI
 
+// MARK: - ControllerFocusState
+
+enum ControllerFocusState {
+  case controller
+  case recommend
+}
+
 // MARK: - VideoControllerView
 
 @available(tvOS 16, *)
-struct VideoControllerView<Title: View, Source: View>: View {
-  @ObservedObject var manager: PlayerManager
-  @FocusState var controllerFocused
+struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
+  @EnvironmentObject var manager: PlayerManager
+  @State private var isLineMenuVisible = false
+  @State private var isResMenuVisible = false
+  @FocusState var controllerFocused: ControllerFocusState?
 
-  private let titleView: Title
-  private let sourceView: Source
+  private let title: Title
+  private let info: Info
+  private let recommend: Recommend
   init(
-    manager: PlayerManager,
     @ViewBuilder title: () -> Title,
-    @ViewBuilder source: () -> Source
+    @ViewBuilder info: () -> Info,
+    @ViewBuilder recommend: () -> Recommend
   ) {
-    self.manager = manager
-    titleView = title()
-    sourceView = source()
+    self.title = title()
+    self.info = info()
+    self.recommend = recommend()
   }
 
   public var body: some View {
@@ -32,33 +42,48 @@ struct VideoControllerView<Title: View, Source: View>: View {
       ProgressView()
         .opacity(manager.playerCoordinator.state == .bufferFinished ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-      titleView
-      HStack(alignment: .center, spacing: 20) {
-        sourceView
-        Button(action: manager.toggleFav) {
-          if let item = manager.item {
-            item.playerInfo.isFav
-              ? Image(systemName: "star.fill").foregroundColor(.yellow)
-              : Image(systemName: "star").foregroundColor(.secondary)
-          }
-        }
-        .disabled(!manager.isOverlayVisible)
-        Button(action: manager.refreshStream, label: {
-          Image(systemName: "arrow.clockwise")
-        })
-        .disabled(!manager.isOverlayVisible)
-        Spacer()
-        Group {
-          resourceMenu
-          danmakuToggle
-          lineMenu
-          infoPanel
-        }
-      }
-      .focused($controllerFocused)
-      .buttonStyle(ControllerButtonStyle())
+      title
+      controller
+        .focusSection()
+        .focused($controllerFocused, equals: .controller)
+      recommend
+        .focusSection()
+        .focused($controllerFocused, equals: .recommend)
     }
     .background(overlayGradient)
+    .offset(y: manager.isRecommendVisible ? 0 : 240)
+    .onChange(of: controllerFocused) { newFocus in
+      switch newFocus {
+      case .controller:
+        manager.isRecommendVisible = false
+      case .recommend:
+        manager.isRecommendVisible = true
+      case .none:
+        break
+      }
+    }
+  }
+
+  var controller: some View {
+    HStack(alignment: .center, spacing: 20) {
+      info
+      Button(action: manager.toggleFav) {
+        manager.item?.playerInfo.isFav ?? false
+          ? Image(systemName: "star.fill").foregroundColor(.yellow)
+          : Image(systemName: "star").foregroundColor(.secondary)
+      }
+      .disabled(!manager.isOverlayVisible)
+      Button(action: manager.refreshStream) {
+        Image(systemName: "arrow.clockwise")
+      }
+      .disabled(!manager.isOverlayVisible)
+      Spacer()
+      resourceMenu
+      lineMenu
+      danmakuToggle
+      infoPanel
+    }
+    .buttonStyle(ControllerButtonStyle())
   }
 
   @ViewBuilder
@@ -79,8 +104,8 @@ struct VideoControllerView<Title: View, Source: View>: View {
       if #available(tvOS 17, *) {
         Menu(content: content, label: label)
       } else {
-        Button(action: manager.toggleResMenu, label: label)
-          .fullScreenCover(isPresented: $manager.isMenuVisible) {
+        Button(action: { isResMenuVisible.toggle() }, label: label)
+          .fullScreenCover(isPresented: $isResMenuVisible) {
             CustomMenu(content: content)
           }
       }
@@ -111,8 +136,8 @@ struct VideoControllerView<Title: View, Source: View>: View {
       if #available(tvOS 17, *) {
         Menu(content: content, label: label)
       } else {
-        Button(action: manager.toggleResMenu, label: label)
-          .fullScreenCover(isPresented: $manager.isMenuVisible) {
+        Button(action: { isLineMenuVisible.toggle() }, label: label)
+          .fullScreenCover(isPresented: $isLineMenuVisible) {
             CustomMenu(content: content)
           }
       }
@@ -175,7 +200,7 @@ private let consoleFont = Font.system(size: 24).monospaced()
 private let overlayGradient = LinearGradient(
   stops: [
     Gradient.Stop(color: .black.opacity(0), location: 0.22),
-    Gradient.Stop(color: .black.opacity(0.7), location: 1),
+    Gradient.Stop(color: .black.opacity(0.9), location: 1),
   ],
   startPoint: .top,
   endPoint: .bottom

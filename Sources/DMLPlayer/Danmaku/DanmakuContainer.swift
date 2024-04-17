@@ -6,6 +6,7 @@
 //
 import DanmakuKit
 import DMLPlayerProtocol
+import OSLog
 import SwiftUI
 
 // MARK: - DanmakuContainer
@@ -31,10 +32,6 @@ struct DanmakuContainer: UIViewRepresentable {
     let uiView = context.coordinator.uiView
 
     uiView?.play()
-    if options.isDanmakuAutoPlay {
-      context.coordinator.danmakuService = service
-      context.coordinator.startDanmakuStream(options: options)
-    }
     return uiView!
   }
 
@@ -51,6 +48,7 @@ struct DanmakuContainer: UIViewRepresentable {
 
 extension DanmakuContainer {
   public class Coordinator: DanmakuDelegate, ObservableObject, @unchecked Sendable {
+    private let logger = Logger(subsystem: "DMLPlayer", category: "Danmaku.Coordinator")
     var danmakuService: DanmakuService?
     var uiView: DanmakuView?
 
@@ -59,21 +57,32 @@ extension DanmakuContainer {
     }
 
     deinit {
+      cleanDanmakuService()
+    }
+
+    func setDanmakuService(_ service: DanmakuService?) {
+      logger.debug("set danmaku service: \(service.debugDescription)")
+      danmakuService = service
+    }
+
+    func cleanDanmakuService() {
+      logger.debug("clean danmaku service: \(self.danmakuService.debugDescription)")
       stopDanmakuStream()
     }
 
     func startDanmakuStream(options: DanmakuOptions) {
+      logger.debug("start danmaku stream")
       Task { @MainActor in
         await danmakuService?.setDanmakuHandler { [weak self] danmaku in
           self?.shootDanmaku(danmaku, fontSize: options.danmakuFontSize, speed: options.danmakuSpeed)
         }
-      }
-      Task {
         await danmakuService?.start()
       }
     }
 
     func stopDanmakuStream() {
+      logger.debug("stop danmaku stream")
+      uiView?.clean()
       Task {
         await danmakuService?.stop()
         await danmakuService?.clearDanmakuHandler()

@@ -5,6 +5,7 @@
 //  Created by littleTurnip on 9/27/23.
 //
 
+import Combine
 import DMLPlayerProtocol
 import KSPlayer
 import OSLog
@@ -15,28 +16,28 @@ import SwiftUI
 public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
   private var overlayTask: Task<Void, Never>?
+  private var cancellables: Set<AnyCancellable> = []
   private var retryStreamIndex = -1
-  private var retryCount = 0
-  private let maxRetryCount = 3
 
-  public var item: (any PlayableItem)?
-  @MainActor
-  public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
+  @MainActor public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
   public let danmakuCoordinator: DanmakuCoordinator = DanmakuContainer.Coordinator()
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
-  public var danmakuService: DanmakuService?
+
+  @Published public var item: (any PlayableItem)?
+  @Published public var libraryItemList: [any PlayableItem] = []
+  @Published public var isVisible = false
 
   @Published var streamResource: (any LiveResource)?
 
   @Published var isOverlayVisible = true
-  @Published var isMenuVisible = false
+  @Published var isRecommendVisible = false
   @Published var isInfoVisible = false
   @Published var isDanmakuVisible: Bool
 
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
-  public init(playerOptions: PlayerOptions, danmakuOptions: DanmakuOptions) {
+  public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.isDanmakuAutoPlay
@@ -47,17 +48,34 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     logger.trace("PlayerViewModel deinit")
   }
 
+  @MainActor
   public func updateItem(_ newItem: any PlayableItem) {
-    danmakuService = nil
+    logger.info("update item: \(newItem.id)")
+    danmakuCoordinator.cleanDanmakuService()
+    isDanmakuVisible = false
+    playerCoordinator.playerLayer?.pause()
+    item?.update()
     item = newItem
     streamResource = newItem.currentResource
-    danmakuService = newItem.danmakuService
+    danmakuCoordinator.setDanmakuService(newItem.danmakuService)
+    if danmakuOptions.isDanmakuAutoPlay {
+      danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
+      isDanmakuVisible = true
+    }
     subscribeResource()
   }
 
   public func updateOptions(_ options: (PlayerOptions, DanmakuOptions)) {
     playerOptions = options.0
     danmakuOptions = options.1
+  }
+
+  public func subscribeToLibraryItems(_ publisher: AnyPublisher<[any PlayableItem], Never>) {
+    publisher
+      .sink(receiveValue: { [weak self] newItems in
+        self?.libraryItemList = newItems
+      })
+      .store(in: &cancellables)
   }
 
   func subscribeResource() {
@@ -92,15 +110,13 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     case .readyToPlay:
       break
     case .buffering:
-      Task { @MainActor in
-      }
+      Task { @MainActor in }
     case .bufferFinished:
       Task { @MainActor in
         item?.setCDNLine()
       }
     case .paused:
-      Task { @MainActor in
-      }
+      Task { @MainActor in }
     case .playedToTheEnd:
       break
     case .error:
@@ -128,11 +144,12 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   }
 
   func handleKey(_ move: MoveCommandDirection) {
+    debugPrint("handleKey: \(move)")
     switch move {
     case .up:
       showOverlay()
     case .down:
-      hideOverlay()
+      showOverlay()
     case .left:
       showOverlay()
     case .right:
@@ -171,11 +188,6 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
 // MARK: - methods of Controller
 
 extension PlayerManager {
-  func toggleResMenu() {
-    guard isOverlayVisible else { return }
-    isMenuVisible.toggle()
-  }
-
   func toggleInfo() {
     guard isOverlayVisible else { return }
     isInfoVisible.toggle()
@@ -204,6 +216,7 @@ extension PlayerManager {
 
   func toggleFav() {
     item?.toggleFav()
+    objectWillChange.send()
     item?.update()
   }
 }

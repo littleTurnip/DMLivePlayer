@@ -18,9 +18,9 @@ public protocol PlayerProtocol: ObservableObject {
   @MainActor
   var playerCoordinator: PlayerCoordinator { get }
   var danmakuCoordinator: DanmakuCoordinator { get }
-  var danmakuService: DanmakuService? { get set }
   var playerOptions: PlayerOptions { get set }
   var danmakuOptions: DanmakuOptions { get set }
+  var isVisible: Bool { get set }
 
   func updateItem(_ newItem: any PlayableItem)
   func updateOptions(_ options: (PlayerOptions, DanmakuOptions))
