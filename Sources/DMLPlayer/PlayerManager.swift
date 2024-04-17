@@ -5,6 +5,7 @@
 //  Created by littleTurnip on 9/27/23.
 //
 
+import Combine
 import DMLPlayerProtocol
 import KSPlayer
 import OSLog
@@ -19,13 +20,18 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   private var retryCount = 0
   private let maxRetryCount = 3
 
+  @Published
   public var item: (any PlayableItem)?
+  @Published
+  public var libraryItemList: [any PlayableItem] = []
+  private var cancellables: Set<AnyCancellable> = []
+  @Published
+  public var navigateToLive = false
   @MainActor
   public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
   public let danmakuCoordinator: DanmakuCoordinator = DanmakuContainer.Coordinator()
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
-  public var danmakuService: DanmakuService?
 
   @Published var streamResource: (any LiveResource)?
 
@@ -36,7 +42,7 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
 
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
-  public init(playerOptions: PlayerOptions, danmakuOptions: DanmakuOptions) {
+  public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.isDanmakuAutoPlay
@@ -47,17 +53,33 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     logger.trace("PlayerViewModel deinit")
   }
 
+  @MainActor
   public func updateItem(_ newItem: any PlayableItem) {
-    danmakuService = nil
+    logger.info("update item: \(newItem.id)")
+    danmakuCoordinator.cleanDanmakuService()
+    isDanmakuVisible = false
+    playerCoordinator.playerLayer?.pause()
     item = newItem
     streamResource = newItem.currentResource
-    danmakuService = newItem.danmakuService
+    danmakuCoordinator.setDanmakuService(newItem.danmakuService)
+    if danmakuOptions.isDanmakuAutoPlay {
+      danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
+      isDanmakuVisible = true
+    }
     subscribeResource()
   }
 
   public func updateOptions(_ options: (PlayerOptions, DanmakuOptions)) {
     playerOptions = options.0
     danmakuOptions = options.1
+  }
+
+  public func subscribeToLibraryItems(_ publisher: AnyPublisher<[any PlayableItem], Never>) {
+    publisher
+      .sink(receiveValue: { [weak self] newItems in
+        self?.libraryItemList = newItems
+      })
+      .store(in: &cancellables)
   }
 
   func subscribeResource() {
