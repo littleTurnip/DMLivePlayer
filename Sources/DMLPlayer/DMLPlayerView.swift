@@ -8,19 +8,25 @@ import DMLPlayerProtocol
 import KSPlayer
 import SwiftUI
 
-public struct DMLPlayerView<Title: View, Source: View>: View {
+public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   @Environment(\.dismiss)
   private var dismiss
+  @ObservedObject
+  var manager: PlayerManager
 
-  @EnvironmentObject var manager: PlayerManager
-  private let titleView: Title
-  private let sourceView: Source
+  private let title: () -> Title
+  private let info: () -> Info
+  private let recommend: () -> Recommend
   public init(
+    _ manager: PlayerManager,
     @ViewBuilder title: @escaping () -> Title,
-    @ViewBuilder source: @escaping () -> Source
+    @ViewBuilder info: @escaping () -> Info,
+    @ViewBuilder recommend: @escaping () -> Recommend
   ) {
-    titleView = title()
-    sourceView = source()
+    self.manager = manager
+    self.title = title
+    self.info = info
+    self.recommend = recommend
   }
 
   public var body: some View {
@@ -38,22 +44,18 @@ public struct DMLPlayerView<Title: View, Source: View>: View {
         .ignoresSafeArea(.all)
         .zIndex(1)
       }
-      VideoControllerView(
-        manager: manager,
-        title: { titleView },
-        source: { sourceView }
-      )
-      .opacity(manager.isOverlayVisible ? 1 : 0)
-      .zIndex(manager.controlletrZIndex)
+      VideoControllerView(title: title, info: info, recommend: recommend)
+        .opacity(manager.isOverlayVisible ? 1 : 0)
+        .zIndex(manager.controlletrZIndex)
       DanmakuContainer(
         coordinator: manager.danmakuCoordinator as! DanmakuContainer.Coordinator,
-        service: manager.danmakuService,
         options: manager.danmakuOptions
       )
       .allowsHitTesting(false)
       .ignoresSafeArea(.all)
       .zIndex(2)
     }
+    .environmentObject(manager)
     .preferredColorScheme(.dark)
     .onMoveCommand(perform: manager.handleKey)
     .onPlayPauseCommand(perform: manager.refreshStream)
