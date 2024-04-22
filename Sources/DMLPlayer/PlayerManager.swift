@@ -19,8 +19,8 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   private var cancellables: Set<AnyCancellable> = []
   private var retryStreamIndex = -1
 
-  @MainActor public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
-  public let danmakuCoordinator: DanmakuCoordinator = DanmakuContainer.Coordinator()
+  @Published public var playerCoordinator: PlayerCoordinator
+  public let danmakuCoordinator: DanmakuCoordinator
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
@@ -37,11 +37,13 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
 
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
+  @MainActor
   public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.isDanmakuAutoPlay
-    subscribeResource()
+    playerCoordinator = KSVideoPlayer.Coordinator()
+    danmakuCoordinator = DanmakuContainer.Coordinator()
   }
 
   deinit {

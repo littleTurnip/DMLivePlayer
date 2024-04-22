@@ -15,7 +15,6 @@ public typealias PlayerCoordinator = KSVideoPlayer.Coordinator
 
 public protocol PlayerProtocol: ObservableObject {
   var item: (any PlayableItem)? { get set }
-  @MainActor
   var playerCoordinator: PlayerCoordinator { get }
   var danmakuCoordinator: DanmakuCoordinator { get }
   var playerOptions: PlayerOptions { get set }
