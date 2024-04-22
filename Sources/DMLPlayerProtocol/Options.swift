@@ -24,24 +24,8 @@ public class PlayerOptions: KSOptions {
 
   override public func sei(string: String) {}
   override public func updateVideo(refreshRate: Float, isDovi: Bool, formatDescription: CMFormatDescription?) {
-    Task { @MainActor in
-      guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-            let displayManager = windowScene.windows.first?.avDisplayManager,
-            isDisplayCriteriaEnabled,
-            displayManager.isDisplayCriteriaMatchingEnabled
-      else {
-        return
-      }
-      if let formatDescription {
-        if #available(tvOS 17.0, *),
-           KSOptions.displayCriteriaFormatDescriptionEnabled {
-          displayManager.preferredDisplayCriteria = AVDisplayCriteria(refreshRate: refreshRate, formatDescription: formatDescription)
-        } else {
-          let dynamicRange = isDovi ? .dolbyVision : formatDescription.dynamicRange
-          displayManager.preferredDisplayCriteria = AVDisplayCriteria(refreshRate: refreshRate, videoDynamicRange: dynamicRange.rawValue)
-        }
-      }
-    }
+    guard isDisplayCriteriaEnabled else { return }
+    super.updateVideo(refreshRate: refreshRate, isDovi: isDovi, formatDescription: formatDescription)
   }
 }
 
