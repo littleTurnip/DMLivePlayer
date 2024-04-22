@@ -106,20 +106,11 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
       debugPrint("PlayerViewModel.handlePlayerStateChanged: \(state)")
     #endif
     switch state {
-    case .prepareToPlay:
-      break
-    case .readyToPlay:
-      break
-    case .buffering:
-      Task { @MainActor in }
     case .bufferFinished:
       Task { @MainActor in
         item?.setCDNLine()
       }
-    case .paused:
-      Task { @MainActor in }
-    case .playedToTheEnd:
-      break
+
     case .error:
       guard let stream = streamResource else { return }
       retryStreamIndex += 1
@@ -134,6 +125,8 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
           item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
         }
       }
+    default:
+      break
     }
   }
 
