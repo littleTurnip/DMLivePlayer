@@ -55,10 +55,11 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     logger.info("update item: \(newItem.id)")
     danmakuCoordinator.cleanDanmakuService()
     isDanmakuVisible = false
-    playerCoordinator.playerLayer?.pause()
     item?.update()
     item = newItem
-    streamResource = newItem.currentResource
+    if let url = item?.currentResource?.url {
+      playerCoordinator.playerLayer?.player.replace(url: url, options: playerOptions)
+    }
     danmakuCoordinator.setDanmakuService(newItem.danmakuService)
     if danmakuOptions.isDanmakuAutoPlay {
       danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
@@ -93,12 +94,9 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   }
 
   @MainActor func destroy() async {
-    if let playerLayer = playerCoordinator.playerLayer {
-      playerLayer.pause()
-    }
+    playerCoordinator.resetPlayer()
     updateItem()
     danmakuCoordinator.stopDanmakuStream()
-    playerCoordinator.playerLayer = nil
   }
 
   // MARK: - methods of PlayerViewModel
