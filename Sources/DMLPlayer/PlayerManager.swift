@@ -94,6 +94,7 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     if let playerLayer = playerCoordinator.playerLayer {
       playerLayer.pause()
     }
+    updateItem()
     danmakuCoordinator.stopDanmakuStream()
     playerCoordinator.playerLayer = nil
   }
