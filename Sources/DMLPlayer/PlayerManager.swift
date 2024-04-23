@@ -68,9 +68,9 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     subscribeResource()
   }
 
-  public func updateOptions(_ options: (PlayerOptions, DanmakuOptions)) {
-    playerOptions = options.0
-    danmakuOptions = options.1
+  public func updateOptions(_ player: PlayerOptions, _ danmaku: DanmakuOptions) {
+    playerOptions = player
+    danmakuOptions = danmaku
   }
 
   public func subscribeToLibraryItems(_ publisher: AnyPublisher<[any PlayableItem], Never>) {

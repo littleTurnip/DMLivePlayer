@@ -22,5 +22,5 @@ public protocol PlayerProtocol: ObservableObject {
   var isVisible: Bool { get set }
 
   func updateItem(_ newItem: any PlayableItem)
-  func updateOptions(_ options: (PlayerOptions, DanmakuOptions))
+  func updateOptions(_ player: PlayerOptions, _ danmaku: DanmakuOptions)
 }
