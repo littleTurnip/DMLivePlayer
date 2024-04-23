@@ -60,8 +60,6 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
     .onMoveCommand(perform: manager.handleKey)
     .onPlayPauseCommand(perform: manager.refreshStream)
     .onExitCommand { manager.isOverlayVisible ? manager.hideOverlay() : dismiss() }
-    .onDisappear {
-      Task { await manager.destroy() }
-    }
+    .onDisappear { manager.destroy() }
   }
 }

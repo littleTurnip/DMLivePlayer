@@ -13,7 +13,8 @@ public typealias PlayerCoordinator = KSVideoPlayer.Coordinator
 
 // MARK: - PlayerProtocol
 
-public protocol PlayerProtocol: ObservableObject {
+@MainActor
+public protocol PlayerProtocol: ObservableObject, Sendable {
   var item: (any PlayableItem)? { get set }
   var playerCoordinator: PlayerCoordinator { get }
   var danmakuCoordinator: DanmakuCoordinator { get }
