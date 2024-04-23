@@ -40,7 +40,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   public var body: some View {
     VStack(alignment: .leading) {
       ProgressView()
-        .opacity(manager.playerCoordinator.state == .bufferFinished ? 0 : 1)
+        .opacity(manager.playerCoordinator.state.isPlaying ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       title
       controller
