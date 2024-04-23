@@ -19,8 +19,8 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   private var cancellables: Set<AnyCancellable> = []
   private var retryStreamIndex = -1
 
-  @MainActor public let playerCoordinator: PlayerCoordinator = KSVideoPlayer.Coordinator()
-  public let danmakuCoordinator: DanmakuCoordinator = DanmakuContainer.Coordinator()
+  @Published public var playerCoordinator: PlayerCoordinator
+  public let danmakuCoordinator: DanmakuCoordinator
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
@@ -37,11 +37,13 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
 
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
+  @MainActor
   public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.isDanmakuAutoPlay
-    subscribeResource()
+    playerCoordinator = KSVideoPlayer.Coordinator()
+    danmakuCoordinator = DanmakuContainer.Coordinator()
   }
 
   deinit {
@@ -53,10 +55,11 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     logger.info("update item: \(newItem.id)")
     danmakuCoordinator.cleanDanmakuService()
     isDanmakuVisible = false
-    playerCoordinator.playerLayer?.pause()
     item?.update()
     item = newItem
-    streamResource = newItem.currentResource
+    if let url = item?.currentResource?.url {
+      playerCoordinator.playerLayer?.player.replace(url: url, options: playerOptions)
+    }
     danmakuCoordinator.setDanmakuService(newItem.danmakuService)
     if danmakuOptions.isDanmakuAutoPlay {
       danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
@@ -91,12 +94,9 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   }
 
   @MainActor func destroy() async {
-    if let playerLayer = playerCoordinator.playerLayer {
-      playerLayer.pause()
-    }
+    playerCoordinator.resetPlayer()
     updateItem()
     danmakuCoordinator.stopDanmakuStream()
-    playerCoordinator.playerLayer = nil
   }
 
   // MARK: - methods of PlayerViewModel
@@ -106,20 +106,11 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
       debugPrint("PlayerViewModel.handlePlayerStateChanged: \(state)")
     #endif
     switch state {
-    case .prepareToPlay:
-      break
-    case .readyToPlay:
-      break
-    case .buffering:
-      Task { @MainActor in }
     case .bufferFinished:
       Task { @MainActor in
         item?.setCDNLine()
       }
-    case .paused:
-      Task { @MainActor in }
-    case .playedToTheEnd:
-      break
+
     case .error:
       guard let stream = streamResource else { return }
       retryStreamIndex += 1
@@ -134,6 +125,8 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
           item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
         }
       }
+    default:
+      break
     }
   }
 
@@ -213,6 +206,11 @@ extension PlayerManager {
 
   func refreshStream() {
     item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
+    Task {
+      if await playerCoordinator.state == .paused {
+        await playerCoordinator.playerLayer?.play()
+      }
+    }
   }
 
   func toggleFav() {
