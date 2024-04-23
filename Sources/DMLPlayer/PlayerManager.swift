@@ -206,6 +206,11 @@ extension PlayerManager {
 
   func refreshStream() {
     item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
+    Task {
+      if await playerCoordinator.state == .paused {
+        await playerCoordinator.playerLayer?.play()
+      }
+    }
   }
 
   func toggleFav() {
