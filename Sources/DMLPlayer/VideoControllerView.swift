@@ -22,6 +22,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   @EnvironmentObject var manager: PlayerManager
   @State private var isLineMenuVisible = false
   @State private var isResMenuVisible = false
+  @State private var recommendHeight: CGFloat = 0
   @FocusState var controllerFocused: ControllerFocusState?
 
   private let title: Title
@@ -46,12 +47,15 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       controller
         .focusSection()
         .focused($controllerFocused, equals: .controller)
-      recommend
-        .focusSection()
-        .focused($controllerFocused, equals: .recommend)
+      GeometryReader { geometry in
+        recommend
+          .onAppear { recommendHeight = geometry.size.height }
+          .focusSection()
+          .focused($controllerFocused, equals: .recommend)
+      }
     }
     .background(overlayGradient)
-    .offset(y: manager.isRecommendVisible ? 0 : 240)
+    .offset(y: manager.isRecommendVisible ? 60 : recommendHeight - 90)
     .onChange(of: controllerFocused) { newFocus in
       switch newFocus {
       case .controller:
@@ -200,26 +204,15 @@ private let consoleFont = Font.system(size: 24).monospaced()
 private let overlayGradient = LinearGradient(
   stops: [
     Gradient.Stop(color: .black.opacity(0), location: 0.22),
-    Gradient.Stop(color: .black.opacity(0.9), location: 1),
+    Gradient.Stop(color: .black.opacity(0.85), location: 0.7),
   ],
   startPoint: .top,
   endPoint: .bottom
 )
 
+// MARK: VideoControllerView.ControllerButtonStyle
+
 private extension VideoControllerView {
-  // MARK: - InfoButtonStyle
-
-  private struct InfoButtonStyle: ButtonStyle {
-    @Environment(\.isFocused) private var isFocused
-    func makeBody(configuration: Configuration) -> some View {
-      configuration.label
-        .foregroundColor(isFocused ? .primary : .secondary)
-        .background(isFocused ? .white.opacity(0.3) : .clear)
-    }
-  }
-
-  // MARK: - ControllerButtonStyle
-
   private struct ControllerButtonStyle: ButtonStyle {
     @Environment(\.isFocused) private var isFocused
     func makeBody(configuration: Configuration) -> some View {
