@@ -13,7 +13,8 @@ import SwiftUI
 
 // MARK: - PlayerManager
 
-public class PlayerManager: PlayerProtocol, @unchecked Sendable {
+@MainActor
+public class PlayerManager: PlayerProtocol {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
   private var overlayTask: Task<Void, Never>?
   private var cancellables: Set<AnyCancellable> = []
@@ -37,7 +38,6 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
 
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
-  @MainActor
   public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
@@ -50,7 +50,6 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     logger.trace("PlayerViewModel deinit")
   }
 
-  @MainActor
   public func updateItem(_ newItem: any PlayableItem) {
     logger.info("update item: \(newItem.id)")
     danmakuCoordinator.cleanDanmakuService()
@@ -93,7 +92,7 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
     }
   }
 
-  @MainActor func destroy() async {
+  func destroy() {
     playerCoordinator.resetPlayer()
     updateItem()
     danmakuCoordinator.stopDanmakuStream()
@@ -118,12 +117,10 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
         logger.error("No more stream to play")
         return
       }
-      Task { @MainActor in
-        if retryStreamIndex >= stream.cdnList.count {
-          item?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
-        } else {
-          item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
-        }
+      if retryStreamIndex >= stream.cdnList.count {
+        item?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
+      } else {
+        item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
       }
     default:
       break
@@ -164,18 +161,14 @@ public class PlayerManager: PlayerProtocol, @unchecked Sendable {
   }
 
   func showOverlay() {
-    Task { @MainActor in
-      isOverlayVisible = true
-      startOverlayTask()
-    }
+    isOverlayVisible = true
+    startOverlayTask()
   }
 
   func hideOverlay() {
-    Task { @MainActor in
-      isOverlayVisible = false
-      overlayTask?.cancel()
-      overlayTask = nil
-    }
+    isOverlayVisible = false
+    overlayTask?.cancel()
+    overlayTask = nil
   }
 }
 
@@ -206,10 +199,8 @@ extension PlayerManager {
 
   func refreshStream() {
     item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
-    Task {
-      if await playerCoordinator.state == .paused {
-        await playerCoordinator.playerLayer?.play()
-      }
+    if playerCoordinator.state == .paused {
+      playerCoordinator.playerLayer?.play()
     }
   }
 
