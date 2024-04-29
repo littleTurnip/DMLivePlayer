@@ -53,16 +53,11 @@ public class PlayerManager: PlayerProtocol {
   public func updateItem(_ newItem: any PlayableItem) {
     logger.info("update item: \(newItem.id)")
     danmakuCoordinator.cleanDanmakuService()
-    isDanmakuVisible = false
-    item?.update()
+    item?.updateInfo()
     item = newItem
-    if let url = item?.currentResource?.url {
-      playerCoordinator.playerLayer?.player.replace(url: url, options: playerOptions)
-    }
     danmakuCoordinator.setDanmakuService(newItem.danmakuService)
     if danmakuOptions.isDanmakuAutoPlay {
       danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
-      isDanmakuVisible = true
     }
     subscribeResource()
   }
@@ -93,9 +88,14 @@ public class PlayerManager: PlayerProtocol {
   }
 
   func destroy() {
+    logger.info("destroy")
     playerCoordinator.resetPlayer()
-    updateItem()
+    updatePlayInfo()
     danmakuCoordinator.stopDanmakuStream()
+    item = nil
+    #if DEBUG
+      debugPrint(item?.id ?? "item is nil")
+    #endif
   }
 
   // MARK: - methods of PlayerViewModel
@@ -191,10 +191,10 @@ extension PlayerManager {
     }
   }
 
-  func updateItem() {
+  func updatePlayInfo() {
     item?.plusPlayCount()
     item?.setLastPlayTime()
-    item?.update()
+    item?.updateInfo()
   }
 
   func refreshStream() {
@@ -207,6 +207,6 @@ extension PlayerManager {
   func toggleFav() {
     item?.toggleFav()
     objectWillChange.send()
-    item?.update()
+    item?.updateInfo()
   }
 }
