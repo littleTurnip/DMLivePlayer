@@ -11,8 +11,9 @@ import SwiftUI
 
 public protocol PlayableItem: ObservableObject, Identifiable {
   associatedtype LiveInfo: RoomInfo
+  associatedtype Platform: RawRepresentable<String>
   var id: String { get }
-  var platform: String { get }
+  var platform: Platform { get }
   var roomID: String { get }
   var helperID: String? { get }
   var liveInfo: LiveInfo { get set }
@@ -41,7 +42,7 @@ public protocol PlayableItem: ObservableObject, Identifiable {
 }
 
 public extension PlayableItem {
-  var id: String { "\(platform)-\(roomID)" }
+  var id: String { "\(platform.rawValue)-\(roomID)" }
   var logger: Logger { Logger(subsystem: "DMLPlayer", category: "PlayableItem") }
 }
 
