@@ -26,7 +26,9 @@ public class PlayerManager: PlayerProtocol {
   public var danmakuOptions: DanmakuOptions
 
   @Published public var item: (any PlayableItem)?
+  @Published public var currentPlaylist: (any Playlist)?
   @Published public var libraryItemList: [any PlayableItem] = []
+  @Published public var libraryPlaylist: [any Playlist] = []
   @Published public var isVisible = false
 
   @Published var streamResource: (any LiveResource)?
@@ -71,6 +73,14 @@ public class PlayerManager: PlayerProtocol {
     publisher
       .sink(receiveValue: { [weak self] newItems in
         self?.libraryItemList = newItems
+      })
+      .store(in: &cancellables)
+  }
+
+  public func subscribeToLibraryPlaylists(_ publisher: AnyPublisher<[any Playlist], Never>) {
+    publisher
+      .sink(receiveValue: { [weak self] newItems in
+        self?.libraryPlaylist = newItems
       })
       .store(in: &cancellables)
   }

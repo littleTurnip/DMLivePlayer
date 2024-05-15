@@ -12,6 +12,7 @@ import SwiftUI
 public protocol PlayableItem: ObservableObject, Identifiable {
   associatedtype LiveInfo: RoomInfo
   associatedtype Platform: RawRepresentable<String>
+  associatedtype PlayerPlaylist: Playlist
   var id: String { get }
   var platform: Platform { get }
   var roomID: String { get }
@@ -21,6 +22,7 @@ public protocol PlayableItem: ObservableObject, Identifiable {
   // MARK: - local properties
 
   var playerInfo: PlayInfo { get set }
+  var currentPlaylist: PlayerPlaylist? { get }
   var currentResource: LiveResource? { get set }
   var danmakuService: DanmakuService? { get }
   /// An `AsyncStream` of `PlayerResource` objects.
