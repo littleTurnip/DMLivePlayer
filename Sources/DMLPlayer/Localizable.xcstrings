@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Audio Bitrate: %@ KB/s" : {
+
+    },
+    "FPS: %@" : {
+
+    },
+    "helperID: %@" : {
+
+    },
+    "id: %@" : {
+
+    },
+    "line: %@" : {
+
+    },
+    "playCount: %lld" : {
+
+    },
+    "rate: %lld" : {
+
+    },
+    "Resolution: %d x %d" : {
+
+    },
+    "Video Bitrate: %@ MB/s" : {
+
+    },
+    "Video Codec: %@" : {
+
+    }
+  },
+  "version" : "1.0"
+}
