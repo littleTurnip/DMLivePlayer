@@ -38,6 +38,7 @@ public class PlayerManager: PlayerProtocol {
   @Published var isInfoVisible = false
   @Published var isDanmakuVisible: Bool
 
+  @Published var showUnfavConfirmation = false
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
   public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
@@ -215,6 +216,19 @@ extension PlayerManager {
   }
 
   func toggleFav() {
+    if let isFav = item?.playerInfo.isFav, isFav {
+      showUnfavConfirmation = true
+    } else {
+      performToggleFav()
+    }
+  }
+
+  func confirmUnfav() {
+    performToggleFav()
+    showUnfavConfirmation = false
+  }
+
+  private func performToggleFav() {
     item?.toggleFav()
     objectWillChange.send()
     item?.updateInfo()

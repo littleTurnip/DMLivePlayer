@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "DMLPlayer",
+  defaultLocalization: "en",
   platforms: [
     .tvOS(.v16),
   ],

@@ -76,6 +76,10 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
           ? Image(systemName: "star.fill").foregroundColor(.yellow)
           : Image(systemName: "star").foregroundColor(.secondary)
       }
+      .alert(Localized.Alert[.favMessage], isPresented: $manager.showUnfavConfirmation) {
+        Button(Localized.Button[.confirmUnfav], role: .destructive) { manager.confirmUnfav() }
+        Button(Localized.Button[.cancel], role: .cancel) {}
+      }
       .disabled(!manager.isOverlayVisible)
       Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
