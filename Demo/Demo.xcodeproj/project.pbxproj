@@ -9,21 +9,21 @@
 /* Begin PBXBuildFile section */
 		1B2243682BC3B9F900374DB6 /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2243672BC3B9F900374DB6 /* DemoApp.swift */; };
 		1B22436A2BC3B9F900374DB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2243692BC3B9F900374DB6 /* ContentView.swift */; };
+		1B6347D42BFCAEB00094D380 /* PlayItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B6347D32BFCAEB00094D380 /* PlayItem.swift */; };
+		1B6347D62BFCAEC50094D380 /* DanmakuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B6347D52BFCAEC50094D380 /* DanmakuService.swift */; };
 		1BB39C0D2BC3BBB200E53285 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1BB39C0C2BC3BBB200E53285 /* Preview Assets.xcassets */; };
 		1BB39C102BC3BE1000E53285 /* DanmakuKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB39C0F2BC3BE1000E53285 /* DanmakuKit */; };
 		1BB39C122BC3BE1400E53285 /* DMLPlayer in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB39C112BC3BE1400E53285 /* DMLPlayer */; };
 		1BB39C142BC3BE1600E53285 /* DMLPlayerProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB39C132BC3BE1600E53285 /* DMLPlayerProtocol */; };
-		1BB39C162BC3D06500E53285 /* PlayItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB39C152BC3D06500E53285 /* PlayItem.swift */; };
-		1BB39C182BC3D09800E53285 /* DanmakuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB39C172BC3D09800E53285 /* DanmakuService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1B2243642BC3B9F900374DB6 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B2243672BC3B9F900374DB6 /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		1B2243692BC3B9F900374DB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1B6347D32BFCAEB00094D380 /* PlayItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayItem.swift; sourceTree = "<group>"; };
+		1B6347D52BFCAEC50094D380 /* DanmakuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuService.swift; sourceTree = "<group>"; };
 		1BB39C0C2BC3BBB200E53285 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		1BB39C152BC3D06500E53285 /* PlayItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayItem.swift; sourceTree = "<group>"; };
-		1BB39C172BC3D09800E53285 /* DanmakuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,8 +43,8 @@
 		1B22435B2BC3B9F900374DB6 = {
 			isa = PBXGroup;
 			children = (
-				1BB39C172BC3D09800E53285 /* DanmakuService.swift */,
-				1BB39C152BC3D06500E53285 /* PlayItem.swift */,
+				1B6347D52BFCAEC50094D380 /* DanmakuService.swift */,
+				1B6347D32BFCAEB00094D380 /* PlayItem.swift */,
 				1B2243672BC3B9F900374DB6 /* DemoApp.swift */,
 				1B2243692BC3B9F900374DB6 /* ContentView.swift */,
 				1BB39C0C2BC3BBB200E53285 /* Preview Assets.xcassets */,
@@ -143,9 +143,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				1B22436A2BC3B9F900374DB6 /* ContentView.swift in Sources */,
-				1BB39C182BC3D09800E53285 /* DanmakuService.swift in Sources */,
+				1B6347D62BFCAEC50094D380 /* DanmakuService.swift in Sources */,
+				1B6347D42BFCAEB00094D380 /* PlayItem.swift in Sources */,
 				1B2243682BC3B9F900374DB6 /* DemoApp.swift in Sources */,
-				1BB39C162BC3D06500E53285 /* PlayItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
