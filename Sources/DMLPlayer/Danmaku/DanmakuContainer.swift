@@ -12,8 +12,7 @@ import SwiftUI
 // MARK: - DanmakuContainer
 
 struct DanmakuContainer: UIViewRepresentable {
-  @StateObject
-  var coordinator: Coordinator
+  @StateObject var coordinator: Coordinator
   var service: DanmakuService?
   let options: DanmakuOptions
 
@@ -48,7 +47,7 @@ struct DanmakuContainer: UIViewRepresentable {
 // MARK: DanmakuContainer.Coordinator
 
 extension DanmakuContainer {
-  public class Coordinator: DanmakuDelegate, ObservableObject, @unchecked Sendable {
+  public class Coordinator: DanmakuDelegate {
     private let logger = Logger(subsystem: "DMLPlayer", category: "Danmaku.Coordinator")
     var danmakuService: DanmakuService?
     var blockKeywords: Set<String> = []
@@ -95,6 +94,7 @@ extension DanmakuContainer {
     func shootDanmaku(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) {
       // 判断是否包含屏蔽词
       if isDanmakuInSet(danmaku, in: blockKeywords) {
+        logger.debug("block danmaku: \(danmaku.text)")
         return
       } else {
         let model = TextDanmakuModel(danmaku, fontSize: fontSize, speed: speed)
@@ -113,3 +113,11 @@ extension DanmakuContainer {
     }
   }
 }
+
+// MARK: - DanmakuContainer.Coordinator + ObservableObject
+
+extension DanmakuContainer.Coordinator: ObservableObject {}
+
+// MARK: - DanmakuContainer.Coordinator + Sendable
+
+extension DanmakuContainer.Coordinator: @unchecked Sendable {}
