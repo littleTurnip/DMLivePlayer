@@ -38,6 +38,7 @@ public struct DanmakuOptions {
   public var danmakuFontSize: CGFloat
   public var danmakuSpeed: Double
   public var isDanmakuAutoPlay: Bool
+  public var blockKeywords: Set<String> = []
 
   public init(
     danmakuViewHeight: CGFloat = 550,
@@ -45,7 +46,8 @@ public struct DanmakuOptions {
     danmakuTrackHeight: CGFloat = 1.4,
     danmakuFontSize: CGFloat = 34,
     danmakuSpeed: Double = 10,
-    isDanmakuAutoPlay: Bool = true
+    isDanmakuAutoPlay: Bool = true,
+    blockKeywords: Set<String> = []
   ) {
     self.danmakuViewHeight = danmakuViewHeight
     self.danmakuOpacity = danmakuOpacity
@@ -53,5 +55,6 @@ public struct DanmakuOptions {
     self.danmakuFontSize = danmakuFontSize
     self.danmakuSpeed = danmakuSpeed
     self.isDanmakuAutoPlay = isDanmakuAutoPlay
+    self.blockKeywords = blockKeywords
   }
 }

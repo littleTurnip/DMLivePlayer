@@ -25,6 +25,7 @@ struct DanmakuContainer: UIViewRepresentable {
     uiView.trackHeight = options.danmakuTrackHeight * options.danmakuFontSize
     uiView.delegate = coordinator
     coordinator.uiView = uiView
+    coordinator.blockKeywords = options.blockKeywords
     return coordinator
   }
 
