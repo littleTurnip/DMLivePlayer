@@ -12,8 +12,7 @@ import SwiftUI
 // MARK: - DanmakuContainer
 
 struct DanmakuContainer: UIViewRepresentable {
-  @StateObject
-  var coordinator: Coordinator
+  @StateObject var coordinator: Coordinator
   var service: DanmakuService?
   let options: DanmakuOptions
 
@@ -25,6 +24,7 @@ struct DanmakuContainer: UIViewRepresentable {
     uiView.trackHeight = options.danmakuTrackHeight * options.danmakuFontSize
     uiView.delegate = coordinator
     coordinator.uiView = uiView
+    coordinator.blockKeywords = options.blockKeywords
     return coordinator
   }
 
@@ -47,9 +47,10 @@ struct DanmakuContainer: UIViewRepresentable {
 // MARK: DanmakuContainer.Coordinator
 
 extension DanmakuContainer {
-  public class Coordinator: DanmakuDelegate, ObservableObject, @unchecked Sendable {
+  public class Coordinator: DanmakuDelegate {
     private let logger = Logger(subsystem: "DMLPlayer", category: "Danmaku.Coordinator")
     var danmakuService: DanmakuService?
+    var blockKeywords: Set<String> = []
     var uiView: DanmakuView?
 
     init(service: DanmakuService? = nil) {
@@ -74,7 +75,7 @@ extension DanmakuContainer {
       logger.debug("start danmaku stream")
       Task { @MainActor in
         await danmakuService?.setDanmakuHandler { [weak self] danmaku in
-          self?.shootDanmaku(danmaku, fontSize: options.danmakuFontSize, speed: options.danmakuSpeed)
+          await self?.shootDanmaku(danmaku, fontSize: options.danmakuFontSize, speed: options.danmakuSpeed)
         }
         await danmakuService?.start()
       }
@@ -89,11 +90,34 @@ extension DanmakuContainer {
       }
     }
 
-    @Sendable func shootDanmaku(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) {
-      Task { @MainActor in
+    @MainActor
+    func shootDanmaku(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) {
+      // 判断是否包含屏蔽词
+      if isDanmakuInSet(danmaku, in: blockKeywords) {
+        logger.debug("block danmaku: \(danmaku.text)")
+        return
+      } else {
         let model = TextDanmakuModel(danmaku, fontSize: fontSize, speed: speed)
         uiView?.shoot(danmaku: model)
       }
     }
+
+    private func isDanmakuInSet(_ danmaku: Danmaku, in keywordSet: Set<String>) -> Bool {
+      guard !keywordSet.isEmpty else { return false }
+      let pattern = keywordSet.map { NSRegularExpression.escapedPattern(for: $0) }.joined(separator: "|")
+      guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+        return false
+      }
+      let matches = regex.firstMatch(in: danmaku.text, options: [], range: NSRange(location: 0, length: danmaku.text.utf16.count))
+      return matches != nil
+    }
   }
 }
+
+// MARK: - DanmakuContainer.Coordinator + ObservableObject
+
+extension DanmakuContainer.Coordinator: ObservableObject {}
+
+// MARK: - DanmakuContainer.Coordinator + Sendable
+
+extension DanmakuContainer.Coordinator: @unchecked Sendable {}
