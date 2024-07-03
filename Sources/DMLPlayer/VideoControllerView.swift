@@ -178,6 +178,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
           .font(consoleFont)
           .padding(10)
           .background(Color.black.opacity(0.8))
+          .foregroundStyle(.white)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
