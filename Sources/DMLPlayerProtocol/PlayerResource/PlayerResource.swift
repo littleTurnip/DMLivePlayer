@@ -77,6 +77,24 @@ public extension PlayableItem {
 }
 
 public extension PlayableItem {
+  static func timeAsc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+    lhs.playerInfo.lastPlay < rhs.playerInfo.lastPlay
+  }
+
+  static func timeDesc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+    lhs.playerInfo.lastPlay > rhs.playerInfo.lastPlay
+  }
+
+  static func playCountAsc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+    lhs.playerInfo.playCount < rhs.playerInfo.playCount
+  }
+
+  static func playCountDesc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+    lhs.playerInfo.playCount > rhs.playerInfo.playCount
+  }
+}
+
+public extension PlayableItem {
   func plusPlayCount() {
     playerInfo.playCount += 1
   }
