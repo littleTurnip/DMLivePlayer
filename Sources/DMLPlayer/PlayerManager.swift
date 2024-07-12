@@ -104,6 +104,7 @@ public class PlayerManager: PlayerProtocol {
     updatePlayInfo()
     danmakuCoordinator.stopDanmakuStream()
     item = nil
+    streamResource = nil
     #if DEBUG
       debugPrint(item?.id ?? "item is nil")
     #endif
