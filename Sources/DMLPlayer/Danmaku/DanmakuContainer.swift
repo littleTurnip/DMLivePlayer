@@ -59,6 +59,7 @@ extension DanmakuContainer {
 
     deinit {
       cleanDanmakuService()
+      uiView = nil
     }
 
     func setDanmakuService(_ service: DanmakuService?) {
@@ -68,7 +69,9 @@ extension DanmakuContainer {
 
     func cleanDanmakuService() {
       logger.debug("clean danmaku service: \(self.danmakuService.debugDescription)")
-      stopDanmakuStream()
+      if uiView != nil {
+        stopDanmakuStream()
+      }
     }
 
     func startDanmakuStream(options: DanmakuOptions) {

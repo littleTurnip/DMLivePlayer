@@ -62,7 +62,7 @@ public extension PlayableItem {
   }
 
   func loadResource(line: String? = nil, rate: Int? = nil) {
-    logger.trace("loadStream")
+    logger.trace("loadStream id: \(self.id) line: \(line ?? "nil") rate: \(rate ?? 0)")
     Task { @MainActor in
       let streamResource = await self.fetchResource(line: line, rate: rate)
       #if DEBUG
