@@ -149,18 +149,10 @@ public class PlayerManager: PlayerProtocol {
   }
 
   func handleKey(_ move: MoveCommandDirection) {
-    debugPrint("handleKey: \(move)")
+    logger.debug("handleKey: \(move.hashValue)")
     switch move {
-    case .up:
-      showOverlay()
-    case .down:
-      showOverlay()
-    case .left:
-      showOverlay()
-    case .right:
-      showOverlay()
     default:
-      break
+      if !isRecommendVisible { showOverlay() }
     }
   }
 
