@@ -163,21 +163,23 @@ public class PlayerManager: PlayerProtocol {
   }
 
   private func startOverlayTask() {
+    logger.debug("startOverlayTask")
     overlayTask?.cancel()
     overlayTask = Task {
       try? await Task.sleep(nanoseconds: 10 * 1_000_000_000)
       if Task.isCancelled == false {
         hideOverlay()
+        logger.debug("endOverlayTask")
       }
     }
   }
 
-  func showOverlay() {
+  public func showOverlay() {
     isOverlayVisible = true
     startOverlayTask()
   }
 
-  func hideOverlay() {
+  public func hideOverlay() {
     isOverlayVisible = false
     overlayTask?.cancel()
     overlayTask = nil
