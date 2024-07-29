@@ -32,7 +32,7 @@ public class PlayerManager: PlayerProtocol {
   @Published public var isVisible = false
 
   @Published var streamResource: (any LiveResource)?
-
+  @Published var isPlaying = false
   @Published var isOverlayVisible = true
   @Published var isRecommendVisible = false
   @Published var isInfoVisible = false
@@ -117,11 +117,13 @@ public class PlayerManager: PlayerProtocol {
       debugPrint("PlayerViewModel.handlePlayerStateChanged: \(state)")
     #endif
     switch state {
+    case .buffering:
+      isPlaying = false
     case .bufferFinished:
+      isPlaying = true
       Task { @MainActor in
         item?.setCDNLine()
       }
-
     case .error:
       guard let stream = streamResource else { return }
       retryStreamIndex += 1
