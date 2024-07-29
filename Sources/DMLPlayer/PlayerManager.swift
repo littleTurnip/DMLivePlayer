@@ -34,7 +34,7 @@ public class PlayerManager: PlayerProtocol {
   @Published var streamResource: (any LiveResource)?
   @Published var isPlaying = false
   @Published var isOverlayVisible = true
-  @Published var isRecommendVisible = false
+  @Published public var isRecommendVisible = false
   @Published var isInfoVisible = false
   @Published var isDanmakuVisible: Bool
 
