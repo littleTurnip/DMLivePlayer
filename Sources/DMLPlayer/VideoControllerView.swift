@@ -10,9 +10,22 @@ import SwiftUI
 
 // MARK: - ControllerFocusState
 
-enum ControllerFocusState {
-  case controller
+enum ControllerFocusState: Hashable {
+  case controller(Controller)
   case recommend
+}
+
+// MARK: ControllerFocusState.Controller
+
+extension ControllerFocusState {
+  enum Controller: Hashable {
+    case favToggle
+    case refresh
+    case danmakuToggle
+    case lineMenu
+    case resMenu
+    case infoPanal
+  }
 }
 
 // MARK: - VideoControllerView
@@ -41,12 +54,11 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   public var body: some View {
     VStack(alignment: .leading) {
       ProgressView()
-        .opacity(manager.playerCoordinator.state.isPlaying ? 0 : 1)
+        .opacity(manager.isPlaying ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       title
       controller
         .focusSection()
-        .focused($controllerFocused, equals: .controller)
       GeometryReader { geometry in
         recommend
           .onAppear { recommendHeight = geometry.size.height }
@@ -62,7 +74,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
         manager.isRecommendVisible = false
       case .recommend:
         manager.isRecommendVisible = true
-      case .none:
+      case nil:
         break
       }
     }
@@ -76,20 +88,27 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
           ? Image(systemName: "star.fill").foregroundColor(.yellow)
           : Image(systemName: "star").foregroundColor(.secondary)
       }
+      .focused($controllerFocused, equals: .controller(.favToggle))
       .alert(Localized.Alert[.favMessage], isPresented: $manager.showUnfavConfirmation) {
         Button(Localized.Button[.confirmUnfav], role: .destructive) { manager.confirmUnfav() }
         Button(Localized.Button[.cancel], role: .cancel) {}
       }
       .disabled(!manager.isOverlayVisible)
+
       Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
       }
+      .focused($controllerFocused, equals: .controller(.refresh))
       .disabled(!manager.isOverlayVisible)
       Spacer()
       resourceMenu
+        .focused($controllerFocused, equals: .controller(.resMenu))
       lineMenu
+        .focused($controllerFocused, equals: .controller(.lineMenu))
       danmakuToggle
+        .focused($controllerFocused, equals: .controller(.danmakuToggle))
       infoPanel
+        .focused($controllerFocused, equals: .controller(.infoPanal))
     }
     .buttonStyle(ControllerButtonStyle())
   }

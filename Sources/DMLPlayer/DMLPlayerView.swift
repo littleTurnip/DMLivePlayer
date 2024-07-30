@@ -14,6 +14,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   @ObservedObject
   var manager: PlayerManager
 
+  @FocusState private var controllerFocused: Bool
   private let title: () -> Title
   private let info: () -> Info
   private let recommend: () -> Recommend
