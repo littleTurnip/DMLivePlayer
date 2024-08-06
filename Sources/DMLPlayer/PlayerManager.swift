@@ -149,8 +149,9 @@ public class PlayerManager: PlayerProtocol {
   }
 
   func handleKey(_ move: MoveCommandDirection) {
-    logger.debug("handleKey: \(move.hashValue)")
     switch move {
+    case .down:
+      if !isRecommendVisible { isRecommendVisible = true }
     default:
       if !isRecommendVisible { showOverlay() }
     }
