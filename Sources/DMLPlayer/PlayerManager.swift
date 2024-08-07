@@ -41,10 +41,10 @@ public class PlayerManager: PlayerProtocol {
   @Published var showUnfavConfirmation = false
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
-  public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions()) {
+  public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
     self.playerOptions = playerOptions
     self.danmakuOptions = danmakuOptions
-    isDanmakuVisible = danmakuOptions.isDanmakuAutoPlay
+    isDanmakuVisible = danmakuOptions.layer.isAutoPlay
     playerCoordinator = KSVideoPlayer.Coordinator()
     danmakuCoordinator = DanmakuContainer.Coordinator()
   }
@@ -59,7 +59,7 @@ public class PlayerManager: PlayerProtocol {
     updatePlayInfo()
     item = newItem
     danmakuCoordinator.setDanmakuService(newItem.danmakuService)
-    if danmakuOptions.isDanmakuAutoPlay {
+    if danmakuOptions.layer.isAutoPlay {
       danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
     }
     subscribeResource()
