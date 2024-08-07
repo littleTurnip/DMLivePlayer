@@ -45,19 +45,17 @@ public class TextDanmakuModel: DanmakuCellModel {
   var font: UIFont
   var textColor: UIColor
 
-  public init(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) {
-    let fontSize = fontSize
-    let danmakuSpeed = speed * 0.1
+  public init(_ danmaku: Danmaku, options: DanmakuOptions.Danmaku) {
     cellClass = TextDanmakuCell.self
     type = .floating
 
     text = danmaku.text
-    textColor = danmaku.color
+    textColor = options.isColor ? danmaku.color : .white
     identifier = danmaku.id.uuidString
 
-    font = .systemFont(ofSize: fontSize, weight: .medium)
-    size = CGSize(width: Double(text.count + 1) * fontSize, height: fontSize * 1.2)
-    displayTime = 10.0 / danmakuSpeed
+    font = .systemFont(ofSize: options.fontSize, weight: .medium)
+    size = CGSize(width: Double(text.count + 1) * options.fontSize, height: options.fontSize * 1.2)
+    displayTime = 10.0 / (options.speed * 0.1)
   }
 }
 

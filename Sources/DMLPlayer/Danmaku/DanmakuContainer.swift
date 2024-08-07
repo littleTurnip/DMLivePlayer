@@ -100,7 +100,7 @@ extension DanmakuContainer {
         logger.debug("block danmaku: \(danmaku.text)")
         return
       } else {
-        let model = TextDanmakuModel(danmaku, fontSize: options.fontSize, speed: options.speed)
+        let model = TextDanmakuModel(danmaku, options: options)
         uiView?.shoot(danmaku: model)
       }
     }
