@@ -17,11 +17,11 @@ struct DanmakuContainer: UIViewRepresentable {
   let options: DanmakuOptions
 
   func makeCoordinator() -> Coordinator {
-    let uiView = DanmakuView(frame: CGRect(x: 0, y: 0, width: 1920, height: options.danmakuViewHeight))
-    uiView.alpha = CGFloat(options.danmakuOpacity)
+    let uiView = DanmakuView(frame: CGRect(x: 0, y: 0, width: 1920, height: options.layer.viewHeight))
+    uiView.alpha = CGFloat(options.layer.opacity)
     uiView.isUserInteractionEnabled = false
     uiView.enableCellReusable = true
-    uiView.trackHeight = options.danmakuTrackHeight * options.danmakuFontSize
+    uiView.trackHeight = options.layer.trackHeight * options.danmaku.fontSize
     uiView.delegate = coordinator
     coordinator.uiView = uiView
     coordinator.blockKeywords = options.blockKeywords
@@ -78,7 +78,7 @@ extension DanmakuContainer {
       logger.debug("start danmaku stream")
       Task { @MainActor in
         await danmakuService?.setDanmakuHandler { [weak self] danmaku in
-          await self?.shootDanmaku(danmaku, fontSize: options.danmakuFontSize, speed: options.danmakuSpeed)
+          await self?.shootDanmaku(danmaku, options: options.danmaku)
         }
         await danmakuService?.start()
       }
@@ -94,13 +94,13 @@ extension DanmakuContainer {
     }
 
     @MainActor
-    func shootDanmaku(_ danmaku: Danmaku, fontSize: CGFloat, speed: Double) {
+    func shootDanmaku(_ danmaku: Danmaku, options: DanmakuOptions.Danmaku) async {
       // 判断是否包含屏蔽词
       if isDanmakuInSet(danmaku, in: blockKeywords) {
         logger.debug("block danmaku: \(danmaku.text)")
         return
       } else {
-        let model = TextDanmakuModel(danmaku, fontSize: fontSize, speed: speed)
+        let model = TextDanmakuModel(danmaku, fontSize: options.fontSize, speed: options.speed)
         uiView?.shoot(danmaku: model)
       }
     }
