@@ -175,6 +175,7 @@ public class PlayerManager: PlayerProtocol {
   }
 
   public func hideOverlay() {
+    isRecommendVisible = false
     isOverlayVisible = false
     overlayTask?.cancel()
     overlayTask = nil
