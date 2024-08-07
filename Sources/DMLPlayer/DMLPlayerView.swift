@@ -60,7 +60,17 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
     .preferredColorScheme(.dark)
     .onMoveCommand(perform: manager.handleKey)
     .onPlayPauseCommand(perform: manager.refreshStream)
-    .onExitCommand { manager.isOverlayVisible ? manager.hideOverlay() : dismiss() }
+    .onExitCommand {
+      if manager.isOverlayVisible {
+        if manager.isRecommendVisible {
+          manager.isRecommendVisible = false
+        } else {
+          manager.hideOverlay()
+        }
+      } else {
+        dismiss()
+      }
+    }
     .onDisappear { manager.destroy() }
   }
 }

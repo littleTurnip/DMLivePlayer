@@ -36,7 +36,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   @State private var isLineMenuVisible = false
   @State private var isResMenuVisible = false
   @State private var recommendHeight: CGFloat = 0
-  @FocusState var controllerFocused: ControllerFocusState?
+  @FocusState private var controllerFocused: ControllerFocusState?
 
   private let title: Title
   private let info: Info
@@ -68,13 +68,14 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
     }
     .background(overlayGradient)
     .offset(y: manager.isRecommendVisible ? 60 : recommendHeight - 90)
+    .onChange(of: manager.isRecommendVisible) { isVisible in
+      if !isVisible { controllerFocused = .controller(.refresh) }
+    }
     .onChange(of: controllerFocused) { newFocus in
       switch newFocus {
-      case .controller:
-        manager.isRecommendVisible = false
       case .recommend:
         manager.isRecommendVisible = true
-      case nil:
+      default:
         break
       }
     }
