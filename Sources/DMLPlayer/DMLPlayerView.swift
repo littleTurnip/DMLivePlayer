@@ -9,10 +9,8 @@ import KSPlayer
 import SwiftUI
 
 public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
-  @Environment(\.dismiss)
-  private var dismiss
-  @ObservedObject
-  var manager: PlayerManager
+  @Environment(\.dismiss) private var dismiss
+  @ObservedObject var manager: PlayerManager
 
   @FocusState private var controllerFocused: Bool
   private let title: () -> Title
@@ -58,6 +56,15 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
     }
     .environmentObject(manager)
     .preferredColorScheme(.dark)
+    .alert(
+      Localized.Alert[.notPlaying],
+      isPresented: $manager.showNotPlayingAlert
+    ) {
+      Button(Localized.Button[.confirm]) {
+        manager.showNotPlayingAlert = false
+        dismiss()
+      }
+    }
     .onMoveCommand(perform: manager.handleKey)
     .onPlayPauseCommand(perform: manager.refreshStream)
     .onExitCommand {

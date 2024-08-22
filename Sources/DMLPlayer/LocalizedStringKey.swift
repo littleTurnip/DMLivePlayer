@@ -22,6 +22,7 @@ extension LocalizedValueProtocol {
 enum Localized {
   enum Alert: String.LocalizationValue, LocalizedValueProtocol {
     case favMessage = "alert.favMessage"
+    case notPlaying = "alert.notPlaying"
   }
 
   enum Button: String.LocalizationValue, LocalizedValueProtocol {

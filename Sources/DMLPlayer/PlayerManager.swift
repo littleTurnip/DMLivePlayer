@@ -39,6 +39,7 @@ public class PlayerManager: PlayerProtocol {
   @Published var isDanmakuVisible: Bool
 
   @Published var showUnfavConfirmation = false
+  @Published var showNotPlayingAlert = false
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
   public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
@@ -125,17 +126,7 @@ public class PlayerManager: PlayerProtocol {
         item?.setCDNLine()
       }
     case .error:
-      guard let stream = streamResource else { return }
-      retryStreamIndex += 1
-      guard retryStreamIndex < stream.cdnList.count else {
-        logger.error("No more stream to play")
-        return
-      }
-      if retryStreamIndex >= stream.cdnList.count {
-        item?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
-      } else {
-        item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
-      }
+      getNextStream()
     default:
       break
     }
@@ -204,10 +195,27 @@ extension PlayerManager {
   func updatePlayInfo() {
     item?.plusPlayCount()
     item?.setLastPlayTime()
-    item?.updateInfo()
+    item?.setCDNLine()
+    item?.saveInfo()
+  }
+
+  func getNextStream() {
+    guard let stream = streamResource else { return }
+    retryStreamIndex += 1
+//    guard retryStreamIndex < stream.cdnList.count else {
+//      logger.error("No more stream to play")
+//      return
+//    }
+    if retryStreamIndex >= stream.cdnList.count {
+      retryStreamIndex = 0
+      item?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
+    } else {
+      item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
+    }
   }
 
   func refreshStream() {
+    item?.fetchInfo()
     item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
     if playerCoordinator.state == .paused {
       playerCoordinator.playerLayer?.play()
@@ -230,6 +238,6 @@ extension PlayerManager {
   private func performToggleFav() {
     item?.toggleFav()
     objectWillChange.send()
-    item?.updateInfo()
+    item?.saveInfo()
   }
 }
