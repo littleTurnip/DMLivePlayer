@@ -17,6 +17,22 @@
         }
       }
     },
+    "alert.notPlaying" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Livestream End"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直播已结束"
+          }
+        }
+      }
+    },
     "Audio Bitrate: %@ KB/s" : {
       "localizations" : {
         "en" : {

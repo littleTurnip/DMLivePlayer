@@ -39,6 +39,7 @@ public class PlayerManager: PlayerProtocol {
   @Published var isDanmakuVisible: Bool
 
   @Published var showUnfavConfirmation = false
+  @Published var showNotPlayingAlert = false
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
   public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
