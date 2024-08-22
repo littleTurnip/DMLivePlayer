@@ -65,9 +65,12 @@ public extension PlayableItem {
   func loadResource(line: String? = nil, rate: Int? = nil) {
     logger.trace("loadStream id: \(self.id) line: \(line ?? "nil") rate: \(rate ?? 0)")
     Task { @MainActor in
+      guard liveInfo.roomStatus != .offline else {
+        return
+      }
       let streamResource = await self.fetchResource(line: line, rate: rate)
       #if DEBUG
-        debugPrint(streamResource.debugDescription)
+        debugPrint("streamResource: \(streamResource.debugDescription)")
       #endif
       await MainActor.run {
         currentResource = streamResource
