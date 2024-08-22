@@ -205,10 +205,11 @@ extension PlayerManager {
     item?.plusPlayCount()
     item?.setLastPlayTime()
     item?.setCDNLine()
-    item?.updateInfo()
+    item?.saveInfo()
   }
 
   func refreshStream() {
+    item?.fetchInfo()
     item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
     if playerCoordinator.state == .paused {
       playerCoordinator.playerLayer?.play()
@@ -231,6 +232,6 @@ extension PlayerManager {
   private func performToggleFav() {
     item?.toggleFav()
     objectWillChange.send()
-    item?.updateInfo()
+    item?.saveInfo()
   }
 }

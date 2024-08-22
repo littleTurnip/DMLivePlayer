@@ -30,7 +30,7 @@ public protocol PlayableItem: ObservableObject, Identifiable {
   var resourceContinuation: AsyncStream<LiveResource?>.Continuation? { get set }
   init(playerArgs: PlayInfo?, with liveInfo: LiveInfo)
 
-  func updateInfo()
+  func saveInfo()
   func play(with player: any PlayerProtocol)
   /// method to update livestream resource
   /// - Parameter newResource: `PlayerResource` object
