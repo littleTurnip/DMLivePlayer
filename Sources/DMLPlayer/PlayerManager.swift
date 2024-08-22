@@ -204,6 +204,7 @@ extension PlayerManager {
   func updatePlayInfo() {
     item?.plusPlayCount()
     item?.setLastPlayTime()
+    item?.setCDNLine()
     item?.updateInfo()
   }
 

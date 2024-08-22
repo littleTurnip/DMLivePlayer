@@ -123,7 +123,10 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
           Button(
             action: { manager.item?.loadResource(line: stream.line, rate: rate.id) },
             label: {
-              Text(rate.resolution)
+              HStack {
+                if rate.id == stream.rate { Image(systemName: "checkmark") }
+                Text(rate.resolution)
+              }
             }
           )
         }
