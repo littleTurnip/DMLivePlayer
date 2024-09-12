@@ -99,13 +99,12 @@ extension DanmakuContainer {
     @MainActor
     func shootDanmaku(_ danmaku: Danmaku, options: DanmakuOptions.Danmaku) async {
       // 判断是否包含屏蔽词
-      if isDanmakuInSet(danmaku, in: blockKeywords) {
-        logger.debug("block danmaku: \(danmaku.text)")
+      guard !isDanmakuInSet(danmaku, in: blockKeywords) else {
+        logger.debug("Blocked Danmaku: \(danmaku.text)")
         return
-      } else {
-        let model = TextDanmakuModel(danmaku, options: options)
-        uiView?.shoot(danmaku: model)
       }
+      let model = TextDanmakuModel(danmaku, options: options)
+      uiView?.shoot(danmaku: model)
     }
 
     private func isDanmakuInSet(_ danmaku: Danmaku, in keywordSet: Set<String>) -> Bool {
