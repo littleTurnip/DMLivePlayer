@@ -85,9 +85,11 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
     HStack(alignment: .center, spacing: 20) {
       info
       Button(action: manager.toggleFav) {
-        manager.item?.playerInfo.isFav ?? false
-          ? Image(systemName: "star.fill").foregroundColor(.yellow)
-          : Image(systemName: "star").foregroundColor(.secondary)
+        if let isFav = manager.item?.playerInfo.isFav {
+          Image(systemName: "star")
+            .symbolVariant(isFav ? .fill : .none)
+            .foregroundColor(isFav ? .yellow : .secondary)
+        }
       }
       .focused($controllerFocused, equals: .controller(.favToggle))
       .alert(Localized.Alert[.favMessage], isPresented: $manager.showUnfavConfirmation) {
@@ -182,9 +184,8 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
     Button(
       action: manager.toggleDanmaku,
       label: {
-        manager.isDanmakuVisible
-          ? Image(systemName: "list.bullet.rectangle.fill")
-          : Image(systemName: "list.bullet.rectangle")
+        Image(systemName: "list.bullet.rectangle")
+          .symbolVariant(manager.isDanmakuVisible ? .fill : .none)
       }
     )
   }
