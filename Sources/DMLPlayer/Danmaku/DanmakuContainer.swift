@@ -17,15 +17,18 @@ struct DanmakuContainer: UIViewRepresentable {
   let options: DanmakuOptions
 
   func makeCoordinator() -> Coordinator {
+    coordinator.uiView = createDanmakuView()
+    coordinator.blockKeywords = options.blockKeywords
+    return coordinator
+  }
+
+  func createDanmakuView() -> DanmakuView {
     let uiView = DanmakuView(frame: CGRect(x: 0, y: 0, width: 1920, height: options.layer.viewHeight))
     uiView.alpha = CGFloat(options.layer.opacity)
     uiView.isUserInteractionEnabled = false
     uiView.enableCellReusable = true
     uiView.trackHeight = options.layer.trackHeight * options.danmaku.fontSize
-    uiView.delegate = coordinator
-    coordinator.uiView = uiView
-    coordinator.blockKeywords = options.blockKeywords
-    return coordinator
+    return uiView
   }
 
   func makeUIView(context: Context) -> DanmakuView {
