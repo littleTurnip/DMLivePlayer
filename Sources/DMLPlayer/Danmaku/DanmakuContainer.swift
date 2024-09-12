@@ -79,20 +79,20 @@ extension DanmakuContainer {
 
     func startDanmakuStream(options: DanmakuOptions) {
       logger.debug("start danmaku stream")
-      Task { @MainActor in
-        await danmakuService?.setDanmakuHandler { [weak self] danmaku in
+      Task { @MainActor [weak self] in
+        await self?.danmakuService?.setDanmakuHandler { [weak self] danmaku in
           await self?.shootDanmaku(danmaku, options: options.danmaku)
         }
-        await danmakuService?.start()
+        await self?.danmakuService?.start()
       }
     }
 
     func stopDanmakuStream() {
       logger.debug("stop danmaku stream")
       uiView?.clean()
-      Task {
-        await danmakuService?.stop()
-        await danmakuService?.clearDanmakuHandler()
+      Task { [weak self] in
+        await self?.danmakuService?.stop()
+        await self?.danmakuService?.clearDanmakuHandler()
       }
     }
 
