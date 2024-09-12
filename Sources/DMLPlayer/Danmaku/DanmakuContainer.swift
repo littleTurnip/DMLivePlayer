@@ -42,7 +42,6 @@ struct DanmakuContainer: UIViewRepresentable {
 
   func dismantleUIView(_ uiView: DanmakuView, coordinator: Coordinator) {
     coordinator.stopDanmakuStream()
-    coordinator.danmakuService = nil
     uiView.stop()
   }
 }
@@ -52,7 +51,7 @@ struct DanmakuContainer: UIViewRepresentable {
 extension DanmakuContainer {
   public class Coordinator: DanmakuDelegate {
     private let logger = Logger(subsystem: "DMLPlayer", category: "Danmaku.Coordinator")
-    var danmakuService: DanmakuService?
+    private(set) var danmakuService: DanmakuService?
     var blockKeywords: Set<String> = []
     var uiView: DanmakuView?
 
@@ -61,7 +60,9 @@ extension DanmakuContainer {
     }
 
     deinit {
+      logger.debug("DanmakuContainer.Coordinator deinit")
       cleanDanmakuService()
+      danmakuService = nil
       uiView = nil
     }
 
