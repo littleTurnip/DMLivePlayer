@@ -17,15 +17,18 @@ struct DanmakuContainer: UIViewRepresentable {
   let options: DanmakuOptions
 
   func makeCoordinator() -> Coordinator {
+    coordinator.uiView = createDanmakuView()
+    coordinator.blockKeywords = options.blockKeywords
+    return coordinator
+  }
+
+  func createDanmakuView() -> DanmakuView {
     let uiView = DanmakuView(frame: CGRect(x: 0, y: 0, width: 1920, height: options.layer.viewHeight))
     uiView.alpha = CGFloat(options.layer.opacity)
     uiView.isUserInteractionEnabled = false
     uiView.enableCellReusable = true
     uiView.trackHeight = options.layer.trackHeight * options.danmaku.fontSize
-    uiView.delegate = coordinator
-    coordinator.uiView = uiView
-    coordinator.blockKeywords = options.blockKeywords
-    return coordinator
+    return uiView
   }
 
   func makeUIView(context: Context) -> DanmakuView {
@@ -39,7 +42,6 @@ struct DanmakuContainer: UIViewRepresentable {
 
   func dismantleUIView(_ uiView: DanmakuView, coordinator: Coordinator) {
     coordinator.stopDanmakuStream()
-    coordinator.danmakuService = nil
     uiView.stop()
   }
 }
@@ -49,7 +51,7 @@ struct DanmakuContainer: UIViewRepresentable {
 extension DanmakuContainer {
   public class Coordinator: DanmakuDelegate {
     private let logger = Logger(subsystem: "DMLPlayer", category: "Danmaku.Coordinator")
-    var danmakuService: DanmakuService?
+    private(set) var danmakuService: DanmakuService?
     var blockKeywords: Set<String> = []
     var uiView: DanmakuView?
 
@@ -58,7 +60,9 @@ extension DanmakuContainer {
     }
 
     deinit {
-      cleanDanmakuService()
+      logger.debug("DanmakuContainer.Coordinator deinit")
+      stopDanmakuStream()
+      danmakuService = nil
       uiView = nil
     }
 
@@ -67,42 +71,34 @@ extension DanmakuContainer {
       danmakuService = service
     }
 
-    func cleanDanmakuService() {
-      logger.debug("clean danmaku service: \(self.danmakuService.debugDescription)")
-      if uiView != nil {
-        stopDanmakuStream()
-      }
-    }
-
     func startDanmakuStream(options: DanmakuOptions) {
       logger.debug("start danmaku stream")
-      Task { @MainActor in
-        await danmakuService?.setDanmakuHandler { [weak self] danmaku in
+      Task { @MainActor [weak self] in
+        await self?.danmakuService?.setDanmakuHandler { [weak self] danmaku in
           await self?.shootDanmaku(danmaku, options: options.danmaku)
         }
-        await danmakuService?.start()
+        await self?.danmakuService?.start()
       }
     }
 
     func stopDanmakuStream() {
       logger.debug("stop danmaku stream")
       uiView?.clean()
-      Task {
-        await danmakuService?.stop()
-        await danmakuService?.clearDanmakuHandler()
+      Task { [weak self] in
+        await self?.danmakuService?.stop()
+        await self?.danmakuService?.clearDanmakuHandler()
       }
     }
 
     @MainActor
     func shootDanmaku(_ danmaku: Danmaku, options: DanmakuOptions.Danmaku) async {
       // 判断是否包含屏蔽词
-      if isDanmakuInSet(danmaku, in: blockKeywords) {
-        logger.debug("block danmaku: \(danmaku.text)")
+      guard !isDanmakuInSet(danmaku, in: blockKeywords) else {
+        logger.debug("Blocked Danmaku: \(danmaku.text)")
         return
-      } else {
-        let model = TextDanmakuModel(danmaku, options: options)
-        uiView?.shoot(danmaku: model)
       }
+      let model = TextDanmakuModel(danmaku, options: options)
+      uiView?.shoot(danmaku: model)
     }
 
     private func isDanmakuInSet(_ danmaku: Danmaku, in keywordSet: Set<String>) -> Bool {

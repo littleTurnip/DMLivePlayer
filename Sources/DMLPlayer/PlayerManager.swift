@@ -56,7 +56,7 @@ public class PlayerManager: PlayerProtocol {
 
   public func updateItem(_ newItem: any PlayableItem) {
     logger.info("update item: \(newItem.id)")
-    danmakuCoordinator.cleanDanmakuService()
+    danmakuCoordinator.stopDanmakuStream()
     updatePlayInfo()
     item = newItem
     danmakuCoordinator.setDanmakuService(newItem.danmakuService)
