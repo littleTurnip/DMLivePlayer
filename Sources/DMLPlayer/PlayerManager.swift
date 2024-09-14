@@ -142,9 +142,12 @@ public class PlayerManager: PlayerProtocol {
   func handleKey(_ move: MoveCommandDirection) {
     switch move {
     case .down:
-      if !isRecommendVisible { isRecommendVisible = true }
+      if !isRecommendVisible {
+        isRecommendVisible = true
+      }
+      showOverlay()
     default:
-      if !isRecommendVisible { showOverlay() }
+      showOverlay()
     }
   }
 
