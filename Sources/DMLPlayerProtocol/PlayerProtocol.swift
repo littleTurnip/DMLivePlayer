@@ -14,7 +14,7 @@ public typealias PlayerCoordinator = KSVideoPlayer.Coordinator
 // MARK: - PlayerProtocol
 
 @MainActor
-public protocol PlayerProtocol: ObservableObject, Sendable {
+public protocol PlayerProtocol: AnyObject {
   var item: (any PlayableItem)? { get set }
   var currentPlaylist: (any Playlist)? { get set }
   var playerCoordinator: PlayerCoordinator { get }

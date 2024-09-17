@@ -14,7 +14,7 @@ import SwiftUI
 // MARK: - PlayerManager
 
 @MainActor
-public class PlayerManager: PlayerProtocol {
+public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
   private var overlayTask: Task<Void, Never>?
   private var cancellables: Set<AnyCancellable> = []
