@@ -26,7 +26,14 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   public var danmakuOptions: DanmakuOptions
 
   @Published public var item: (any PlayableItem)?
-  @Published public var currentPlaylist: (any Playlist)?
+  @Published public var playlists: [any Playlist] = []
+
+  public var playlistMap: [UUID: Set<String>] {
+    playlists.reduce(into: [:]) { result, playlist in
+      result[playlist.id] = Set(playlist.entries.map { $0.id })
+    }
+  }
+
   @Published public var libraryItemList: [any PlayableItem] = []
   @Published public var libraryPlaylist: [any Playlist] = []
   @Published public var isVisible = false
