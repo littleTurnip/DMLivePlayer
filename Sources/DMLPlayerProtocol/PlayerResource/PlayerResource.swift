@@ -22,7 +22,7 @@ public protocol PlayableItem: ObservableObject, Identifiable {
   // MARK: - local properties
 
   var playerInfo: PlayInfo { get set }
-  var currentPlaylist: PlayerPlaylist? { get }
+  var playlists: Set<PlayerPlaylist> { get }
   var currentResource: LiveResource? { get set }
   var danmakuService: DanmakuService? { get }
   /// An `AsyncStream` of `PlayerResource` objects.
