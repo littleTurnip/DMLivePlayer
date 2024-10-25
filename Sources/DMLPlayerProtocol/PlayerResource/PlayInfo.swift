@@ -12,10 +12,18 @@ public struct PlayInfo: Sendable {
   public var cdnLine: String?
   public var playCount: Int = 0
   public var lastPlay: Date = .init()
-  public init(isFav: Bool = false, playCount: Int = 0, cdnLine: String? = nil, lastPlay: Date = Date()) {
+  public var isSync: Bool = false
+  public init(
+    isFav: Bool = false,
+    playCount: Int = 0,
+    cdnLine: String? = nil,
+    lastPlay: Date = Date(),
+    isSync: Bool = false
+  ) {
     self.isFav = isFav
     self.playCount = playCount
     self.cdnLine = cdnLine
     self.lastPlay = lastPlay
+    self.isSync = isSync
   }
 }
