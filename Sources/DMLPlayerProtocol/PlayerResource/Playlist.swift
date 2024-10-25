@@ -17,16 +17,12 @@ public protocol PlaylistEntry: Identifiable, Equatable {
 
 // MARK: - Playlist
 
-public protocol Playlist: Identifiable, Equatable {
+public protocol Playlist: Identifiable, Equatable, Hashable {
   associatedtype Entry: PlaylistEntry
-  
+
   var id: UUID { get }
   var name: String { get }
   var entries: [Entry] { get }
-
-  mutating func add(_ entry: Entry)
-
-  mutating func remove(_ entry: Entry)
 
   static func == (lhs: Self, rhs: Self) -> Bool
 }
