@@ -32,6 +32,8 @@ public protocol PlayableItem: ObservableObject, Identifiable {
 
   func saveInfo()
   func fetchInfo()
+
+  @MainActor
   func play(with player: any PlayerProtocol)
   /// method to update livestream resource
   /// - Parameter newResource: `PlayerResource` object
