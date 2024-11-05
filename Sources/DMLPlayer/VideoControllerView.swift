@@ -216,12 +216,13 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       Text("playCount: \(manager.item?.playerInfo.playCount ?? 0)")
       Text("line: \(manager.streamResource?.line ?? "N/A")")
       Text("rate: \(manager.streamResource?.rate ?? 0)")
-      if let videoinfo = manager.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled })?.formatDescription {
-        Text("Video Codec: \(videoinfo.mediaSubType.description)")
-        Text("Resolution: \(videoinfo.dimensions.width) x \(videoinfo.dimensions.height)")
+      if let video = manager.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled }) {
+        Text("Video Codec: \(video.mediaSubType.description)")
+        Text("Resolution: \(Int(video.naturalSize.width)) x \(Int(video.naturalSize.height))")
       }
       if let info = manager.playerCoordinator.playerLayer?.player.dynamicInfo {
         Text("FPS: \(String(format: "%.2f", info.displayFPS))")
+        Text("Frame Drop: \(info.droppedVideoFrameCount + info.droppedVideoPacketCount)")
         Text("Video Bitrate: \(info.videoBitrate.bytesToMegabytes()) MB/s")
         Text("Audio Bitrate: \(info.audioBitrate.bytesToKilobytes()) KB/s")
       }
