@@ -49,8 +49,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published var showNotPlayingAlert = false
   var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
-  public init(playerOptions: PlayerOptions = PlayerOptions(), danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
-    self.playerOptions = playerOptions
+  public init(playerOptions: PlayerOptions? = nil, danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
+    if let playerOptions {
+      self.playerOptions = playerOptions
+    } else {
+      self.playerOptions = PlayerOptions()
+    }
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.layer.isAutoPlay
     playerCoordinator = KSVideoPlayer.Coordinator()
