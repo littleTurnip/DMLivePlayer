@@ -1,15 +1,15 @@
 //
-//  File.swift
-//  
+//  Resource.swift
+//
 //
 //  Created by littleTurnip on 4/8/24.
-//  
+//
 
 import Foundation
 
-// MARK: - PlayerResource
+// MARK: - Resource
 
-public protocol LiveResource: Sendable {
+public protocol Resource: Sendable {
   var line: String { get }
   var rate: Int { get }
   var url: URL? { get }

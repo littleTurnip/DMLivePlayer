@@ -32,7 +32,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published public var isVisible = false
   @Published public var showRecommend = false
 
-  @Published var resource: (any LiveResource)?
+  @Published var resource: (any Resource)?
   @Published var showInfo = false
   @Published var showDanmaku: Bool
   @Published var showUnfavConfirmation = false

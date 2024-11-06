@@ -23,11 +23,11 @@ public protocol PlayableItem: ObservableObject, Identifiable {
 
   var playerInfo: PlayInfo { get set }
   var playlists: Set<PlayerPlaylist> { get }
-  var currentResource: LiveResource? { get set }
+  var currentResource: Resource? { get set }
   var danmakuService: DanmakuService? { get }
   /// An `AsyncStream` of `PlayerResource` objects.
-  var resourceStream: AsyncStream<LiveResource?> { get }
-  var resourceContinuation: AsyncStream<LiveResource?>.Continuation? { get set }
+  var resourceStream: AsyncStream<Resource?> { get }
+  var resourceContinuation: AsyncStream<Resource?>.Continuation? { get set }
   init(playerArgs: PlayInfo?, with liveInfo: LiveInfo)
 
   func saveInfo()
@@ -37,13 +37,13 @@ public protocol PlayableItem: ObservableObject, Identifiable {
   func play(with player: any PlayerProtocol)
   /// method to update livestream resource
   /// - Parameter newResource: `PlayerResource` object
-  func updateResource(with newResource: LiveResource?)
+  func updateResource(with newResource: Resource?)
   /// fetch livestream resource
   /// - Parameters:
   ///  - line: Name string representing the CDN line
   ///  - rate: Rate value for the stream
   func loadResource(line: String?, rate: Int?)
-  func fetchResource(line: String?, rate: Int?) async -> LiveResource?
+  func fetchResource(line: String?, rate: Int?) async -> Resource?
 }
 
 public extension PlayableItem {
@@ -53,13 +53,13 @@ public extension PlayableItem {
 
 /// add stream resource related methods
 public extension PlayableItem {
-  var resourceStream: AsyncStream<LiveResource?> {
+  var resourceStream: AsyncStream<Resource?> {
     AsyncStream { [weak self] continuation in
       self?.resourceContinuation = continuation
     }
   }
 
-  func updateResource(with newResource: LiveResource?) {
+  func updateResource(with newResource: Resource?) {
     logger.trace("updateResource")
     resourceContinuation?.yield(newResource)
   }
