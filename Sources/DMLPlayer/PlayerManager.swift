@@ -59,6 +59,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     isDanmakuVisible = danmakuOptions.layer.isAutoPlay
     playerCoordinator = KSVideoPlayer.Coordinator()
     danmakuCoordinator = DanmakuContainer.Coordinator()
+    bindingMaskShow()
   }
 
   deinit {
@@ -95,6 +96,14 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       .sink(receiveValue: { [weak self] newItems in
         self?.libraryPlaylist = newItems
       })
+      .store(in: &cancellables)
+  }
+
+  private func bindingMaskShow() {
+    playerCoordinator.$isMaskShow
+      .sink { [weak self] _ in
+        self?.objectWillChange.send()
+      }
       .store(in: &cancellables)
   }
 
