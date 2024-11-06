@@ -17,9 +17,7 @@ public typealias PlayerCoordinator = KSVideoPlayer.Coordinator
 public protocol PlayerProtocol: AnyObject {
   var item: (any PlayableItem)? { get set }
   var playlists: [any Playlist] { get set }
-  var playlistMap: [UUID: Set<String>] { get }
-  var playerCoordinator: PlayerCoordinator { get }
-  var danmakuCoordinator: DanmakuCoordinator { get }
+
   var playerOptions: PlayerOptions { get set }
   var danmakuOptions: DanmakuOptions { get set }
   var isVisible: Bool { get set }
