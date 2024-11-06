@@ -37,7 +37,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   }
 
   public var body: some View {
-    if let url = manager.streamResource?.url {
+    if let url = manager.resource?.url {
       KSVideoPlayer(
         coordinator: manager.player,
         url: url,

@@ -72,7 +72,7 @@ public extension PlayableItem {
       }
       let streamResource = await self.fetchResource(line: line, rate: rate)
       #if DEBUG
-        debugPrint("streamResource: \(streamResource.debugDescription)")
+        debugPrint("resource: \(streamResource.debugDescription)")
       #endif
       await MainActor.run {
         currentResource = streamResource

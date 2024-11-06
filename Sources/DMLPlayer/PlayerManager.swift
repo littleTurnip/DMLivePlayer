@@ -26,13 +26,13 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
-  @Published public var item: (any PlayableItem)?
+  @Published public var currentItem: (any PlayableItem)?
   @Published public var playlists: [any Playlist] = []
   @Published public var libraryItemList: [any PlayableItem] = []
   @Published public var isVisible = false
   @Published public var showRecommend = false
 
-  @Published var streamResource: (any LiveResource)?
+  @Published var resource: (any LiveResource)?
   @Published var showInfo = false
   @Published var showDanmaku: Bool
   @Published var showUnfavConfirmation = false
@@ -59,7 +59,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     logger.info("update item: \(newItem.id)")
     danmaku.stopDanmakuStream()
     updatePlayInfo()
-    item = newItem
+    currentItem = newItem
     danmaku.setDanmakuService(newItem.danmakuService)
     if danmakuOptions.layer.isAutoPlay {
       danmaku.startDanmakuStream(options: danmakuOptions)
@@ -89,12 +89,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   }
 
   func subscribeResource() {
-    guard let item else { return }
+    guard let currentItem else { return }
     Task {
-      for await resource in item.resourceStream {
+      for await resource in currentItem.resourceStream {
         await MainActor.run { [weak self] in
           self?.logger.trace("resourceStream got")
-          self?.streamResource = resource
+          self?.resource = resource
         }
       }
     }
@@ -105,10 +105,10 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     player.resetPlayer()
     updatePlayInfo()
     danmaku.stopDanmakuStream()
-    item = nil
-    streamResource = nil
+    currentItem = nil
+    resource = nil
     #if DEBUG
-      debugPrint(item?.id ?? "item is nil")
+      debugPrint(currentItem?.id ?? "item is nil")
     #endif
   }
 
@@ -123,7 +123,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       break
     case .bufferFinished:
       Task { @MainActor in
-        item?.setCDNLine()
+        currentItem?.setCDNLine()
       }
     case .error:
       getNextStream()
@@ -172,14 +172,14 @@ extension PlayerManager {
   }
 
   func updatePlayInfo() {
-    item?.plusPlayCount()
-    item?.setLastPlayTime()
-    item?.setCDNLine()
-    item?.saveInfo()
+    currentItem?.plusPlayCount()
+    currentItem?.setLastPlayTime()
+    currentItem?.setCDNLine()
+    currentItem?.saveInfo()
   }
 
   func getNextStream() {
-    guard let stream = streamResource else { return }
+    guard let stream = resource else { return }
     retryStreamIndex += 1
 //    guard retryStreamIndex < stream.cdnList.count else {
 //      logger.error("No more stream to play")
@@ -187,22 +187,22 @@ extension PlayerManager {
 //    }
     if retryStreamIndex >= stream.cdnList.count {
       retryStreamIndex = 0
-      item?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
+      currentItem?.loadResource(line: stream.cdnList[0].id, rate: stream.rate)
     } else {
-      item?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
+      currentItem?.loadResource(line: stream.cdnList[retryStreamIndex].id, rate: stream.rate)
     }
   }
 
   func refreshStream() {
-    item?.fetchInfo()
-    item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
+    currentItem?.fetchInfo()
+    currentItem?.loadResource(line: resource?.line, rate: resource?.rate)
     if player.state == .paused {
       player.playerLayer?.play()
     }
   }
 
   func toggleFav() {
-    if let isFav = item?.playerInfo.isFav, isFav {
+    if let isFav = currentItem?.playerInfo.isFav, isFav {
       showUnfavConfirmation = true
     } else {
       performToggleFav()
@@ -215,8 +215,8 @@ extension PlayerManager {
   }
 
   private func performToggleFav() {
-    item?.toggleFav()
+    currentItem?.toggleFav()
     objectWillChange.send()
-    item?.saveInfo()
+    currentItem?.saveInfo()
   }
 }

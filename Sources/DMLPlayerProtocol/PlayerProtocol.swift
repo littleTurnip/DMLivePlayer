@@ -15,7 +15,7 @@ public typealias PlayerCoordinator = KSVideoPlayer.Coordinator
 
 @MainActor
 public protocol PlayerProtocol: AnyObject {
-  var item: (any PlayableItem)? { get set }
+  var currentItem: (any PlayableItem)? { get set }
   var playlists: [any Playlist] { get set }
 
   var playerOptions: PlayerOptions { get set }

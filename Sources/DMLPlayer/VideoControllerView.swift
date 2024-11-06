@@ -85,7 +85,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
     HStack(alignment: .center, spacing: 20) {
       info
       Button(action: manager.toggleFav) {
-        if let isFav = manager.item?.playerInfo.isFav {
+        if let isFav = manager.currentItem?.playerInfo.isFav {
           Image(systemName: "star")
             .symbolVariant(isFav ? .fill : .none)
             .foregroundColor(isFav ? .yellow : .secondary)
@@ -118,12 +118,12 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
 
   @ViewBuilder
   private var resourceMenu: some View {
-    if let stream = manager.streamResource {
+    if let stream = manager.resource {
       let label = { Text(stream.resolution) }
       let content = {
         ForEach(stream.rateList, id: \.id) { rate in
           Button(
-            action: { manager.item?.loadResource(line: stream.line, rate: rate.id) },
+            action: { manager.currentItem?.loadResource(line: stream.line, rate: rate.id) },
             label: {
               HStack {
                 if rate.id == stream.rate { Image(systemName: "checkmark") }
@@ -150,12 +150,12 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
 
   @ViewBuilder
   private var lineMenu: some View {
-    if let stream = manager.streamResource {
+    if let stream = manager.resource {
       let label = { Image(systemName: "waveform") }
       let content = {
         ForEach(stream.cdnList, id: \.id) { line in
           Button(
-            action: { manager.item?.loadResource(line: line.id, rate: stream.rate) },
+            action: { manager.currentItem?.loadResource(line: line.id, rate: stream.rate) },
             label: {
               HStack {
                 if line.id == stream.line { Image(systemName: "checkmark") }
@@ -211,11 +211,11 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
 
   private var mediaInfo: some View {
     Group {
-      Text("id: \(manager.item?.id ?? "N/A")")
-      Text("helperID: \(manager.item?.helperID ?? "N/A")")
-      Text("playCount: \(manager.item?.playerInfo.playCount ?? 0)")
-      Text("line: \(manager.streamResource?.line ?? "N/A")")
-      Text("rate: \(manager.streamResource?.rate ?? 0)")
+      Text("id: \(manager.currentItem?.id ?? "N/A")")
+      Text("helperID: \(manager.currentItem?.helperID ?? "N/A")")
+      Text("playCount: \(manager.currentItem?.playerInfo.playCount ?? 0)")
+      Text("line: \(manager.resource?.line ?? "N/A")")
+      Text("rate: \(manager.resource?.rate ?? 0)")
       if let video = manager.player.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled }) {
         Text("Video Codec: \(video.mediaSubType.description)")
         Text("Resolution: \(Int(video.naturalSize.width)) x \(Int(video.naturalSize.height))")
