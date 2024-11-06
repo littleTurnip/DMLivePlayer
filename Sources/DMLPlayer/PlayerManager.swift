@@ -150,6 +150,15 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       player.mask(show: true)
     }
   }
+
+  func handleExit() {
+    guard player.isMaskShow else { isVisible = false; return }
+    if showRecommend {
+      showRecommend = false
+    } else {
+      player.mask(show: false)
+    }
+  }
 }
 
 // MARK: - methods of Controller

@@ -17,7 +17,6 @@ enum PlayerFocusState {
 // MARK: - DMLPlayerView
 
 public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
-  @Environment(\.dismiss) private var dismiss
   @ObservedObject var manager: PlayerManager
 
   @FocusState private var focusState: PlayerFocusState?
@@ -34,6 +33,13 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
     self.title = title
     self.info = info
     self.recommend = recommend
+  }
+
+  var confirmButton: some View {
+    Button(Localized.Button[.confirm]) {
+      manager.showNotPlayingAlert = false
+      manager.isVisible = false
+    }
   }
 
   public var body: some View {
@@ -62,32 +68,17 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
           .focused($focusState, equals: .controller)
           .opacity(manager.player.isMaskShow ? 1 : 0)
       }
-
       .environmentObject(manager)
       .preferredColorScheme(.dark)
       .alert(
         Localized.Alert[.notPlaying],
-        isPresented: $manager.showNotPlayingAlert
-      ) {
-        Button(Localized.Button[.confirm]) {
-          manager.showNotPlayingAlert = false
-          dismiss()
-        }
-      }
+        isPresented: $manager.showNotPlayingAlert,
+        actions: { confirmButton }
+      )
       .onMoveCommand(perform: manager.handleKey)
       .onPlayPauseCommand(perform: manager.refreshStream)
-      .onExitCommand {
-        if manager.player.isMaskShow {
-          if manager.showRecommend {
-            manager.showRecommend = false
-          } else {
-            manager.player.mask(show: false)
-          }
-        } else {
-          dismiss()
-        }
-      }
-      .onDisappear { manager.destroy() }
+      .onExitCommand(perform: manager.handleExit)
+      .onDisappear(perform: manager.destroy)
     }
   }
 }
