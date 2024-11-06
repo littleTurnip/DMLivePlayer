@@ -16,7 +16,7 @@ import SwiftUI
 @MainActor
 public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
-  private var overlayTask: Task<Void, Never>?
+
   private var cancellables: Set<AnyCancellable> = []
   private var retryStreamIndex = -1
 
@@ -39,15 +39,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published public var isVisible = false
 
   @Published var streamResource: (any LiveResource)?
-  @Published var isPlaying = false
-  @Published var isOverlayVisible = true
   @Published public var isRecommendVisible = false
   @Published var isInfoVisible = false
   @Published var isDanmakuVisible: Bool
 
   @Published var showUnfavConfirmation = false
   @Published var showNotPlayingAlert = false
-  var controlletrZIndex: Double { isOverlayVisible ? 3.0 : 0 }
 
   public init(playerOptions: PlayerOptions? = nil, danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
     if let playerOptions {
@@ -139,9 +136,8 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     #endif
     switch state {
     case .buffering:
-      isPlaying = false
+      break
     case .bufferFinished:
-      isPlaying = true
       Task { @MainActor in
         item?.setCDNLine()
       }
@@ -155,7 +151,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   func handleSwipe(_ direction: UISwipeGestureRecognizer.Direction) {
     switch direction {
     default:
-      showOverlay()
+      playerCoordinator.mask(show: true)
     }
   }
 
@@ -165,34 +161,10 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       if !isRecommendVisible {
         isRecommendVisible = true
       }
-      showOverlay()
+      playerCoordinator.mask(show: true)
     default:
-      showOverlay()
+      playerCoordinator.mask(show: true)
     }
-  }
-
-  private func startOverlayTask() {
-    logger.debug("startOverlayTask")
-    overlayTask?.cancel()
-    overlayTask = Task {
-      try? await Task.sleep(nanoseconds: 10 * 1_000_000_000)
-      if Task.isCancelled == false {
-        hideOverlay()
-        logger.debug("endOverlayTask")
-      }
-    }
-  }
-
-  public func showOverlay() {
-    isOverlayVisible = true
-    startOverlayTask()
-  }
-
-  public func hideOverlay() {
-    isRecommendVisible = false
-    isOverlayVisible = false
-    overlayTask?.cancel()
-    overlayTask = nil
   }
 }
 
@@ -200,12 +172,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
 extension PlayerManager {
   func toggleInfo() {
-    guard isOverlayVisible else { return }
+    guard playerCoordinator.isMaskShow else { return }
     isInfoVisible.toggle()
   }
 
   func toggleDanmaku() {
-    guard isOverlayVisible else { return }
+    guard playerCoordinator.isMaskShow else { return }
     if isDanmakuVisible {
       danmakuCoordinator.stopDanmakuStream()
       isDanmakuVisible = false

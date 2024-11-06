@@ -54,7 +54,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   public var body: some View {
     VStack(alignment: .leading) {
       ProgressView()
-        .opacity(manager.isPlaying ? 0 : 1)
+//        .opacity(manager.isPlaying ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       title
       controller
@@ -96,13 +96,13 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
         Button(Localized.Button[.confirmUnfav], role: .destructive) { manager.confirmUnfav() }
         Button(Localized.Button[.cancel], role: .cancel) {}
       }
-      .disabled(!manager.isOverlayVisible)
+      .disabled(!manager.playerCoordinator.isMaskShow)
 
       Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
       }
       .focused($controllerFocused, equals: .controller(.refresh))
-      .disabled(!manager.isOverlayVisible)
+      .disabled(!manager.playerCoordinator.isMaskShow)
       Spacer()
       resourceMenu
         .focused($controllerFocused, equals: .controller(.resMenu))

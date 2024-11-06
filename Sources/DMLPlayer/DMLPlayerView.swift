@@ -37,55 +37,57 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   }
 
   public var body: some View {
-    ZStack(alignment: .bottom) {
-      if let url = manager.streamResource?.url {
-        KSVideoPlayer(
-          coordinator: manager.playerCoordinator,
-          url: url,
-          options: manager.playerOptions
-        )
-        .onStateChanged(manager.handlePlayerStateChanged)
-        .onSwipe(manager.handleSwipe)
-        .onAppear { manager.showOverlay() }
-        .background(Color.black)
-        .ignoresSafeArea(.all)
-        .zIndex(1)
-      }
-      VideoControllerView(title: title, info: info, recommend: recommend)
-        .opacity(manager.isOverlayVisible ? 1 : 0)
-        .zIndex(manager.controlletrZIndex)
-      DanmakuContainer(
-        coordinator: manager.danmakuCoordinator as! DanmakuContainer.Coordinator,
-        options: manager.danmakuOptions
+    if let url = manager.streamResource?.url {
+      KSVideoPlayer(
+        coordinator: manager.playerCoordinator,
+        url: url,
+        options: manager.playerOptions
       )
-      .allowsHitTesting(false)
+      .onStateChanged(manager.handlePlayerStateChanged)
+      .background(Color.black)
       .ignoresSafeArea(.all)
-      .zIndex(2)
-    }
-    .environmentObject(manager)
-    .preferredColorScheme(.dark)
-    .alert(
-      Localized.Alert[.notPlaying],
-      isPresented: $manager.showNotPlayingAlert
-    ) {
-      Button(Localized.Button[.confirm]) {
-        manager.showNotPlayingAlert = false
-        dismiss()
+      .overlay {
+        DanmakuContainer(
+          coordinator: manager.danmakuCoordinator as! DanmakuContainer.Coordinator,
+          options: manager.danmakuOptions
+        )
+        .allowsHitTesting(false)
+        .ignoresSafeArea(.all)
       }
-    }
-    .onMoveCommand(perform: manager.handleKey)
-    .onPlayPauseCommand(perform: manager.refreshStream)
-    .onExitCommand {
-      if manager.isOverlayVisible {
-        if manager.isRecommendVisible {
-          manager.isRecommendVisible = false
-        } else {
-          manager.hideOverlay()
+      .overlay {
+        GestureView(swipeAction: manager.handleSwipe, pressAction: { _ in })
+          .focused($focusState, equals: .player)
+          .opacity(!manager.playerCoordinator.isMaskShow ? 1 : 0)
+        VideoControllerView(title: title, info: info, recommend: recommend)
+          .focused($focusState, equals: .controller)
+          .opacity(manager.playerCoordinator.isMaskShow ? 1 : 0)
+      }
+
+      .environmentObject(manager)
+      .preferredColorScheme(.dark)
+      .alert(
+        Localized.Alert[.notPlaying],
+        isPresented: $manager.showNotPlayingAlert
+      ) {
+        Button(Localized.Button[.confirm]) {
+          manager.showNotPlayingAlert = false
+          dismiss()
         }
-      } else {
-        dismiss()
       }
+      .onMoveCommand(perform: manager.handleKey)
+      .onPlayPauseCommand(perform: manager.refreshStream)
+      .onExitCommand {
+        if manager.playerCoordinator.isMaskShow {
+          if manager.isRecommendVisible {
+            manager.isRecommendVisible = false
+          } else {
+            manager.playerCoordinator.mask(show: false)
+          }
+        } else {
+          dismiss()
+        }
+      }
+      .onDisappear { manager.destroy() }
     }
-    .onDisappear { manager.destroy() }
   }
 }
