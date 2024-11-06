@@ -96,13 +96,13 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
         Button(Localized.Button[.confirmUnfav], role: .destructive) { manager.confirmUnfav() }
         Button(Localized.Button[.cancel], role: .cancel) {}
       }
-      .disabled(!manager.playerCoordinator.isMaskShow)
+      .disabled(!manager.player.isMaskShow)
 
       Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
       }
       .focused($controllerFocused, equals: .controller(.refresh))
-      .disabled(!manager.playerCoordinator.isMaskShow)
+      .disabled(!manager.player.isMaskShow)
       Spacer()
       resourceMenu
         .focused($controllerFocused, equals: .controller(.resMenu))
@@ -216,11 +216,11 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       Text("playCount: \(manager.item?.playerInfo.playCount ?? 0)")
       Text("line: \(manager.streamResource?.line ?? "N/A")")
       Text("rate: \(manager.streamResource?.rate ?? 0)")
-      if let video = manager.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled }) {
+      if let video = manager.player.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled }) {
         Text("Video Codec: \(video.mediaSubType.description)")
         Text("Resolution: \(Int(video.naturalSize.width)) x \(Int(video.naturalSize.height))")
       }
-      if let info = manager.playerCoordinator.playerLayer?.player.dynamicInfo {
+      if let info = manager.player.playerLayer?.player.dynamicInfo {
         Text("FPS: \(String(format: "%.2f", info.displayFPS))")
         Text("Frame Drop: \(info.droppedVideoFrameCount + info.droppedVideoPacketCount)")
         Text("Video Bitrate: \(info.videoBitrate.bytesToMegabytes()) MB/s")

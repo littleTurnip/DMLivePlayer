@@ -39,7 +39,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   public var body: some View {
     if let url = manager.streamResource?.url {
       KSVideoPlayer(
-        coordinator: manager.playerCoordinator,
+        coordinator: manager.player,
         url: url,
         options: manager.playerOptions
       )
@@ -48,7 +48,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .ignoresSafeArea(.all)
       .overlay {
         DanmakuContainer(
-          coordinator: manager.danmakuCoordinator as! DanmakuContainer.Coordinator,
+          coordinator: manager.danmaku as! DanmakuContainer.Coordinator,
           options: manager.danmakuOptions
         )
         .allowsHitTesting(false)
@@ -57,10 +57,10 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .overlay {
         GestureView(swipeAction: manager.handleSwipe, pressAction: { _ in })
           .focused($focusState, equals: .player)
-          .opacity(!manager.playerCoordinator.isMaskShow ? 1 : 0)
+          .opacity(!manager.player.isMaskShow ? 1 : 0)
         VideoControllerView(title: title, info: info, recommend: recommend)
           .focused($focusState, equals: .controller)
-          .opacity(manager.playerCoordinator.isMaskShow ? 1 : 0)
+          .opacity(manager.player.isMaskShow ? 1 : 0)
       }
 
       .environmentObject(manager)
@@ -77,11 +77,11 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .onMoveCommand(perform: manager.handleKey)
       .onPlayPauseCommand(perform: manager.refreshStream)
       .onExitCommand {
-        if manager.playerCoordinator.isMaskShow {
+        if manager.player.isMaskShow {
           if manager.isRecommendVisible {
             manager.isRecommendVisible = false
           } else {
-            manager.playerCoordinator.mask(show: false)
+            manager.player.mask(show: false)
           }
         } else {
           dismiss()

@@ -20,8 +20,8 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   private var cancellables: Set<AnyCancellable> = []
   private var retryStreamIndex = -1
 
-  @Published public var playerCoordinator: PlayerCoordinator
-  public let danmakuCoordinator: DanmakuCoordinator
+  @Published public var player: PlayerCoordinator
+  public let danmaku: DanmakuCoordinator
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
@@ -54,8 +54,8 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     }
     self.danmakuOptions = danmakuOptions
     isDanmakuVisible = danmakuOptions.layer.isAutoPlay
-    playerCoordinator = KSVideoPlayer.Coordinator()
-    danmakuCoordinator = DanmakuContainer.Coordinator()
+    player = KSVideoPlayer.Coordinator()
+    danmaku = DanmakuContainer.Coordinator()
     bindingMaskShow()
   }
 
@@ -65,12 +65,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
   public func updateItem(_ newItem: any PlayableItem) {
     logger.info("update item: \(newItem.id)")
-    danmakuCoordinator.stopDanmakuStream()
+    danmaku.stopDanmakuStream()
     updatePlayInfo()
     item = newItem
-    danmakuCoordinator.setDanmakuService(newItem.danmakuService)
+    danmaku.setDanmakuService(newItem.danmakuService)
     if danmakuOptions.layer.isAutoPlay {
-      danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
+      danmaku.startDanmakuStream(options: danmakuOptions)
     }
     subscribeResource()
   }
@@ -97,7 +97,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   }
 
   private func bindingMaskShow() {
-    playerCoordinator.$isMaskShow
+    player.$isMaskShow
       .sink { [weak self] _ in
         self?.objectWillChange.send()
       }
@@ -118,9 +118,9 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
   func destroy() {
     logger.info("destroy")
-    playerCoordinator.resetPlayer()
+    player.resetPlayer()
     updatePlayInfo()
-    danmakuCoordinator.stopDanmakuStream()
+    danmaku.stopDanmakuStream()
     item = nil
     streamResource = nil
     #if DEBUG
@@ -151,7 +151,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   func handleSwipe(_ direction: UISwipeGestureRecognizer.Direction) {
     switch direction {
     default:
-      playerCoordinator.mask(show: true)
+      player.mask(show: true)
     }
   }
 
@@ -161,9 +161,9 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       if !isRecommendVisible {
         isRecommendVisible = true
       }
-      playerCoordinator.mask(show: true)
+      player.mask(show: true)
     default:
-      playerCoordinator.mask(show: true)
+      player.mask(show: true)
     }
   }
 }
@@ -172,17 +172,17 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
 extension PlayerManager {
   func toggleInfo() {
-    guard playerCoordinator.isMaskShow else { return }
+    guard player.isMaskShow else { return }
     isInfoVisible.toggle()
   }
 
   func toggleDanmaku() {
-    guard playerCoordinator.isMaskShow else { return }
+    guard player.isMaskShow else { return }
     if isDanmakuVisible {
-      danmakuCoordinator.stopDanmakuStream()
+      danmaku.stopDanmakuStream()
       isDanmakuVisible = false
     } else {
-      danmakuCoordinator.startDanmakuStream(options: danmakuOptions)
+      danmaku.startDanmakuStream(options: danmakuOptions)
       isDanmakuVisible = true
     }
   }
@@ -212,8 +212,8 @@ extension PlayerManager {
   func refreshStream() {
     item?.fetchInfo()
     item?.loadResource(line: streamResource?.line, rate: streamResource?.rate)
-    if playerCoordinator.state == .paused {
-      playerCoordinator.playerLayer?.play()
+    if player.state == .paused {
+      player.playerLayer?.play()
     }
   }
 
