@@ -51,15 +51,8 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       )
       .onStateChanged(manager.handlePlayerStateChanged)
       .background(Color.black)
+      .overlay { DanmakuContainer(coordinator: manager.danmaku, options: manager.danmakuOptions) }
       .ignoresSafeArea(.all)
-      .overlay {
-        DanmakuContainer(
-          coordinator: manager.danmaku,
-          options: manager.danmakuOptions
-        )
-        .allowsHitTesting(false)
-        .ignoresSafeArea(.all)
-      }
       .overlay {
         GestureView(swipeAction: manager.handleSwipe, pressAction: { _ in })
           .focused($focusState, equals: .player)
