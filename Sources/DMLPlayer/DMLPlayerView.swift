@@ -78,8 +78,8 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .onPlayPauseCommand(perform: manager.refreshStream)
       .onExitCommand {
         if manager.player.isMaskShow {
-          if manager.isRecommendVisible {
-            manager.isRecommendVisible = false
+          if manager.showRecommend {
+            manager.showRecommend = false
           } else {
             manager.player.mask(show: false)
           }

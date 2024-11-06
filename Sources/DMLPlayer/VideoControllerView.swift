@@ -67,14 +67,14 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       }
     }
     .background(overlayGradient)
-    .offset(y: manager.isRecommendVisible ? 60 : recommendHeight - 90)
-    .onChange(of: manager.isRecommendVisible) { isVisible in
+    .offset(y: manager.showRecommend ? 60 : recommendHeight - 90)
+    .onChange(of: manager.showRecommend) { isVisible in
       if !isVisible { controllerFocused = .controller(.refresh) }
     }
     .onChange(of: controllerFocused) { newFocus in
       switch newFocus {
       case .recommend:
-        manager.isRecommendVisible = true
+        manager.showRecommend = true
       default:
         break
       }
@@ -185,7 +185,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       action: manager.toggleDanmaku,
       label: {
         Image(systemName: "list.bullet.rectangle")
-          .symbolVariant(manager.isDanmakuVisible ? .fill : .none)
+          .symbolVariant(manager.showDanmaku ? .fill : .none)
       }
     )
   }
@@ -195,7 +195,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       action: manager.toggleInfo,
       label: { Image(systemName: "info.circle") }
     )
-    .fullScreenCover(isPresented: $manager.isInfoVisible) {
+    .fullScreenCover(isPresented: $manager.showInfo) {
       ZStack {
         VStack(alignment: .leading) { mediaInfo }
           .frame(maxWidth: 500, alignment: .topLeading)

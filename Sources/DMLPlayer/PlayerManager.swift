@@ -30,11 +30,11 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published public var playlists: [any Playlist] = []
   @Published public var libraryItemList: [any PlayableItem] = []
   @Published public var isVisible = false
-  @Published public var isRecommendVisible = false
+  @Published public var showRecommend = false
 
   @Published var streamResource: (any LiveResource)?
-  @Published var isInfoVisible = false
-  @Published var isDanmakuVisible: Bool
+  @Published var showInfo = false
+  @Published var showDanmaku: Bool
   @Published var showUnfavConfirmation = false
   @Published var showNotPlayingAlert = false
 
@@ -45,7 +45,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       self.playerOptions = PlayerOptions()
     }
     self.danmakuOptions = danmakuOptions
-    isDanmakuVisible = danmakuOptions.layer.isAutoPlay
+    showDanmaku = danmakuOptions.layer.isAutoPlay
     player = KSVideoPlayer.Coordinator()
     danmaku = DanmakuContainer.Coordinator()
     bindingMaskShow()
@@ -142,8 +142,8 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   func handleKey(_ move: MoveCommandDirection) {
     switch move {
     case .down:
-      if !isRecommendVisible {
-        isRecommendVisible = true
+      if !showRecommend {
+        showRecommend = true
       }
       player.mask(show: true)
     default:
@@ -157,17 +157,17 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 extension PlayerManager {
   func toggleInfo() {
     guard player.isMaskShow else { return }
-    isInfoVisible.toggle()
+    showInfo.toggle()
   }
 
   func toggleDanmaku() {
     guard player.isMaskShow else { return }
-    if isDanmakuVisible {
+    if showDanmaku {
       danmaku.stopDanmakuStream()
-      isDanmakuVisible = false
+      showDanmaku = false
     } else {
       danmaku.startDanmakuStream(options: danmakuOptions)
-      isDanmakuVisible = true
+      showDanmaku = true
     }
   }
 
