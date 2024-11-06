@@ -17,32 +17,24 @@ import SwiftUI
 public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
 
+  let player: KSVideoPlayer.Coordinator
+  let danmaku: DanmakuContainer.Coordinator
+
   private var cancellables: Set<AnyCancellable> = []
   private var retryStreamIndex = -1
 
-  @Published public var player: PlayerCoordinator
-  public let danmaku: DanmakuCoordinator
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
   @Published public var item: (any PlayableItem)?
   @Published public var playlists: [any Playlist] = []
-
-  public var playlistMap: [UUID: Set<String>] {
-    playlists.reduce(into: [:]) { result, playlist in
-      result[playlist.id] = Set(playlist.entries.map { $0.id })
-    }
-  }
-
   @Published public var libraryItemList: [any PlayableItem] = []
-  @Published public var libraryPlaylist: [any Playlist] = []
   @Published public var isVisible = false
+  @Published public var isRecommendVisible = false
 
   @Published var streamResource: (any LiveResource)?
-  @Published public var isRecommendVisible = false
   @Published var isInfoVisible = false
   @Published var isDanmakuVisible: Bool
-
   @Published var showUnfavConfirmation = false
   @Published var showNotPlayingAlert = false
 
@@ -84,14 +76,6 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     publisher
       .sink(receiveValue: { [weak self] newItems in
         self?.libraryItemList = newItems
-      })
-      .store(in: &cancellables)
-  }
-
-  public func subscribeToLibraryPlaylists(_ publisher: AnyPublisher<[any Playlist], Never>) {
-    publisher
-      .sink(receiveValue: { [weak self] newItems in
-        self?.libraryPlaylist = newItems
       })
       .store(in: &cancellables)
   }

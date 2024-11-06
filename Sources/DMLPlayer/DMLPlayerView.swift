@@ -48,7 +48,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .ignoresSafeArea(.all)
       .overlay {
         DanmakuContainer(
-          coordinator: manager.danmaku as! DanmakuContainer.Coordinator,
+          coordinator: manager.danmaku,
           options: manager.danmakuOptions
         )
         .allowsHitTesting(false)
