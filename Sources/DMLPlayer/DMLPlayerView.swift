@@ -8,11 +8,19 @@ import DMLPlayerProtocol
 import KSPlayer
 import SwiftUI
 
+// MARK: - PlayerFocusState
+
+enum PlayerFocusState {
+  case player, controller
+}
+
+// MARK: - DMLPlayerView
+
 public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   @Environment(\.dismiss) private var dismiss
   @ObservedObject var manager: PlayerManager
 
-  @FocusState private var controllerFocused: Bool
+  @FocusState private var focusState: PlayerFocusState?
   private let title: () -> Title
   private let info: () -> Info
   private let recommend: () -> Recommend
