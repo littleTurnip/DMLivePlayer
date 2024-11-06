@@ -113,6 +113,16 @@
         }
       }
     },
+    "Frame Drop: %u" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frame Drop: %u"
+          }
+        }
+      }
+    },
     "helperID: %@" : {
       "localizations" : {
         "en" : {
@@ -205,6 +215,32 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resolution: %d x %d"
+          }
+        }
+      }
+    },
+    "Resolution: %lf x %lf" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Resolution: %1$lf x %2$lf"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resolution: %1$lf x %2$lf"
+          }
+        }
+      }
+    },
+    "Resolution: %lld x %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Resolution: %1$lld x %2$lld"
           }
         }
       }

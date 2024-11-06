@@ -23,7 +23,7 @@ public class PlayerOptions: KSOptions {
   public var isDisplayCriteriaEnabled: Bool = false
 
   override public func sei(string: String) {}
-  override public func updateVideo(refreshRate: Float, isDovi: Bool, formatDescription: CMFormatDescription?) {
+  override public func updateVideo(refreshRate: Float, isDovi: Bool, formatDescription: CMFormatDescription) {
     guard isDisplayCriteriaEnabled else { return }
     super.updateVideo(refreshRate: refreshRate, isDovi: isDovi, formatDescription: formatDescription)
   }

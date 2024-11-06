@@ -54,7 +54,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   public var body: some View {
     VStack(alignment: .leading) {
       ProgressView()
-        .opacity(manager.isPlaying ? 0 : 1)
+//        .opacity(manager.isPlaying ? 0 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       title
       controller
@@ -67,14 +67,14 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       }
     }
     .background(overlayGradient)
-    .offset(y: manager.isRecommendVisible ? 60 : recommendHeight - 90)
-    .onChange(of: manager.isRecommendVisible) { isVisible in
+    .offset(y: manager.showRecommend ? 60 : recommendHeight - 90)
+    .onChange(of: manager.showRecommend) { isVisible in
       if !isVisible { controllerFocused = .controller(.refresh) }
     }
     .onChange(of: controllerFocused) { newFocus in
       switch newFocus {
       case .recommend:
-        manager.isRecommendVisible = true
+        manager.showRecommend = true
       default:
         break
       }
@@ -85,7 +85,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
     HStack(alignment: .center, spacing: 20) {
       info
       Button(action: manager.toggleFav) {
-        if let isFav = manager.item?.playerInfo.isFav {
+        if let isFav = manager.currentItem?.playerInfo.isFav {
           Image(systemName: "star")
             .symbolVariant(isFav ? .fill : .none)
             .foregroundColor(isFav ? .yellow : .secondary)
@@ -96,13 +96,13 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
         Button(Localized.Button[.confirmUnfav], role: .destructive) { manager.confirmUnfav() }
         Button(Localized.Button[.cancel], role: .cancel) {}
       }
-      .disabled(!manager.isOverlayVisible)
+      .disabled(!manager.player.isMaskShow)
 
       Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
       }
       .focused($controllerFocused, equals: .controller(.refresh))
-      .disabled(!manager.isOverlayVisible)
+      .disabled(!manager.player.isMaskShow)
       Spacer()
       resourceMenu
         .focused($controllerFocused, equals: .controller(.resMenu))
@@ -118,12 +118,12 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
 
   @ViewBuilder
   private var resourceMenu: some View {
-    if let stream = manager.streamResource {
+    if let stream = manager.resource {
       let label = { Text(stream.resolution) }
       let content = {
         ForEach(stream.rateList, id: \.id) { rate in
           Button(
-            action: { manager.item?.loadResource(line: stream.line, rate: rate.id) },
+            action: { manager.currentItem?.loadResource(line: stream.line, rate: rate.id) },
             label: {
               HStack {
                 if rate.id == stream.rate { Image(systemName: "checkmark") }
@@ -150,12 +150,12 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
 
   @ViewBuilder
   private var lineMenu: some View {
-    if let stream = manager.streamResource {
+    if let stream = manager.resource {
       let label = { Image(systemName: "waveform") }
       let content = {
         ForEach(stream.cdnList, id: \.id) { line in
           Button(
-            action: { manager.item?.loadResource(line: line.id, rate: stream.rate) },
+            action: { manager.currentItem?.loadResource(line: line.id, rate: stream.rate) },
             label: {
               HStack {
                 if line.id == stream.line { Image(systemName: "checkmark") }
@@ -185,7 +185,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       action: manager.toggleDanmaku,
       label: {
         Image(systemName: "list.bullet.rectangle")
-          .symbolVariant(manager.isDanmakuVisible ? .fill : .none)
+          .symbolVariant(manager.showDanmaku ? .fill : .none)
       }
     )
   }
@@ -195,7 +195,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       action: manager.toggleInfo,
       label: { Image(systemName: "info.circle") }
     )
-    .fullScreenCover(isPresented: $manager.isInfoVisible) {
+    .fullScreenCover(isPresented: $manager.showInfo) {
       ZStack {
         VStack(alignment: .leading) { mediaInfo }
           .frame(maxWidth: 500, alignment: .topLeading)
@@ -211,17 +211,18 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
 
   private var mediaInfo: some View {
     Group {
-      Text("id: \(manager.item?.id ?? "N/A")")
-      Text("helperID: \(manager.item?.helperID ?? "N/A")")
-      Text("playCount: \(manager.item?.playerInfo.playCount ?? 0)")
-      Text("line: \(manager.streamResource?.line ?? "N/A")")
-      Text("rate: \(manager.streamResource?.rate ?? 0)")
-      if let videoinfo = manager.playerCoordinator.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled })?.formatDescription {
-        Text("Video Codec: \(videoinfo.mediaSubType.description)")
-        Text("Resolution: \(videoinfo.dimensions.width) x \(videoinfo.dimensions.height)")
+      Text("id: \(manager.currentItem?.id ?? "N/A")")
+      Text("helperID: \(manager.currentItem?.helperID ?? "N/A")")
+      Text("playCount: \(manager.currentItem?.playerInfo.playCount ?? 0)")
+      Text("line: \(manager.resource?.line ?? "N/A")")
+      Text("rate: \(manager.resource?.rate ?? 0)")
+      if let video = manager.player.playerLayer?.player.tracks(mediaType: .video).first(where: { $0.isEnabled }) {
+        Text("Video Codec: \(video.mediaSubType.description)")
+        Text("Resolution: \(Int(video.naturalSize.width)) x \(Int(video.naturalSize.height))")
       }
-      if let info = manager.playerCoordinator.playerLayer?.player.dynamicInfo {
+      if let info = manager.player.playerLayer?.player.dynamicInfo {
         Text("FPS: \(String(format: "%.2f", info.displayFPS))")
+        Text("Frame Drop: \(info.droppedVideoFrameCount + info.droppedVideoPacketCount)")
         Text("Video Bitrate: \(info.videoBitrate.bytesToMegabytes()) MB/s")
         Text("Audio Bitrate: \(info.audioBitrate.bytesToKilobytes()) KB/s")
       }
