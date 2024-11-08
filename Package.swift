@@ -16,7 +16,7 @@ let package = Package(
     .library(name: "DMLPlayerProtocol", targets: ["DMLPlayerProtocol"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/littleTurnip/KSPlayer.git", .upToNextMajor(from: "2.4.0")),
+    .package(url: "https://github.com/littleTurnip/KSPlayer.git", .upToNextMajor(from: "2.4.6")),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
