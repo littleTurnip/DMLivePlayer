@@ -30,6 +30,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published public var playlists: [any Playlist] = []
   @Published public var libraryItemList: [any PlayableItem] = []
   @Published public var isVisible = false
+  @Published public var overlayVisible = false
   @Published public var showRecommend = false
 
   @Published var resource: (any Resource)?
@@ -143,7 +144,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   }
 
   func handleExit() {
-    guard player.isMaskShow else { isVisible = false; return }
+    guard overlayVisible else { isVisible = false; return }
     if showRecommend {
       showRecommend = false
     } else {
@@ -156,12 +157,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
 extension PlayerManager {
   func toggleInfo() {
-    guard player.isMaskShow else { return }
+    guard overlayVisible else { return }
     showInfo.toggle()
   }
 
   func toggleDanmaku() {
-    guard player.isMaskShow else { return }
+    guard overlayVisible else { return }
     if showDanmaku {
       danmaku.stopDanmakuStream()
       showDanmaku = false

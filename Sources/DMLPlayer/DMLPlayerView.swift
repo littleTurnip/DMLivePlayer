@@ -56,11 +56,12 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .overlay {
         GestureView(swipeAction: manager.handleSwipe, pressAction: { _ in })
           .focused($focusState, equals: .player)
-          .opacity(!manager.player.isMaskShow ? 1 : 0)
+          .opacity(!manager.overlayVisible ? 1 : 0)
         VideoControllerView(title: title, info: info, recommend: recommend)
           .focused($focusState, equals: .controller)
-          .opacity(manager.player.isMaskShow ? 1 : 0)
+          .opacity(manager.overlayVisible ? 1 : 0)
       }
+      .defaultFocus($focusState, .controller)
       .environmentObject(manager)
       .preferredColorScheme(.dark)
       .alert(

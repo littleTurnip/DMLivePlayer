@@ -96,13 +96,13 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
         Button(Localized.Button[.confirmUnfav], role: .destructive) { manager.confirmUnfav() }
         Button(Localized.Button[.cancel], role: .cancel) {}
       }
-      .disabled(!manager.player.isMaskShow)
+      .disabled(!manager.overlayVisible)
 
       Button(action: manager.refreshStream) {
         Image(systemName: "arrow.clockwise")
       }
       .focused($controllerFocused, equals: .controller(.refresh))
-      .disabled(!manager.player.isMaskShow)
+      .disabled(!manager.overlayVisible)
       Spacer()
       resourceMenu
         .focused($controllerFocused, equals: .controller(.resMenu))
