@@ -100,6 +100,8 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     danmaku.stopDanmakuStream()
     currentItem = nil
     resource = nil
+    showRecommend = false
+    retryStreamIndex = -1
     #if DEBUG
       debugPrint(currentItem?.id ?? "item is nil")
     #endif
