@@ -21,6 +21,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   let danmaku: DanmakuContainer.Coordinator
 
   private var cancellables: Set<AnyCancellable> = []
+  private var overlayHideManager: DelayActionManager?
   private var retryStreamIndex = -1
 
   public var playerOptions: PlayerOptions
