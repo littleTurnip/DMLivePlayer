@@ -21,6 +21,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   let danmaku: DanmakuContainer.Coordinator
 
   private var cancellables: Set<AnyCancellable> = []
+  private var overlayHideManager: DelayActionManager?
   private var retryStreamIndex = -1
 
   public var playerOptions: PlayerOptions
@@ -30,6 +31,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published public var playlists: [any Playlist] = []
   @Published public var libraryItemList: [any PlayableItem] = []
   @Published public var isVisible = false
+  @Published public var overlayVisible = false
   @Published public var showRecommend = false
 
   @Published var resource: (any Resource)?
@@ -48,7 +50,6 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     showDanmaku = danmakuOptions.layer.isAutoPlay
     player = KSVideoPlayer.Coordinator()
     danmaku = DanmakuContainer.Coordinator()
-    bindingMaskShow()
   }
 
   deinit {
@@ -70,6 +71,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   public func updateOptions(_ player: PlayerOptions, _ danmaku: DanmakuOptions) {
     playerOptions = player
     danmakuOptions = danmaku
+    showDanmaku = danmaku.layer.isAutoPlay
   }
 
   public func subscribeToLibraryItems(_ publisher: AnyPublisher<[any PlayableItem], Never>) {
@@ -77,14 +79,6 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       .sink(receiveValue: { [weak self] newItems in
         self?.libraryItemList = newItems
       })
-      .store(in: &cancellables)
-  }
-
-  private func bindingMaskShow() {
-    player.$isMaskShow
-      .sink { [weak self] _ in
-        self?.objectWillChange.send()
-      }
       .store(in: &cancellables)
   }
 
@@ -107,6 +101,8 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     danmaku.stopDanmakuStream()
     currentItem = nil
     resource = nil
+    showRecommend = false
+    retryStreamIndex = -1
     #if DEBUG
       debugPrint(currentItem?.id ?? "item is nil")
     #endif
@@ -132,10 +128,43 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     }
   }
 
+  @MainActor
+  func showOverlay() {
+    overlayVisible = true
+    scheduleOverlayHide()
+  }
+
+  @MainActor
+  func hideOverlay() {
+    showRecommend = false
+    overlayVisible = false
+    cancelOverlayHide()
+  }
+
+  private func scheduleOverlayHide() {
+    let delay = playerOptions.autoHideDelay
+
+    if overlayHideManager == nil {
+      overlayHideManager = DelayActionManager(interval: delay) { [weak self] in
+        await self?.hideOverlay()
+      }
+    }
+    Task {
+      await overlayHideManager?.resetDelay()
+    }
+  }
+
+  private func cancelOverlayHide() {
+    Task {
+      await overlayHideManager?.cancel()
+      overlayHideManager = nil
+    }
+  }
+
   func handleSwipe(_ direction: UISwipeGestureRecognizer.Direction) {
     switch direction {
     default:
-      player.mask(show: true)
+      showOverlay()
     }
   }
 
@@ -145,18 +174,18 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       if !showRecommend {
         showRecommend = true
       }
-      player.mask(show: true)
+      showOverlay()
     default:
-      player.mask(show: true)
+      showOverlay()
     }
   }
 
   func handleExit() {
-    guard player.isMaskShow else { isVisible = false; return }
+    guard overlayVisible else { isVisible = false; return }
     if showRecommend {
       showRecommend = false
     } else {
-      player.mask(show: false)
+      hideOverlay()
     }
   }
 }
@@ -165,12 +194,12 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
 extension PlayerManager {
   func toggleInfo() {
-    guard player.isMaskShow else { return }
+    guard overlayVisible else { return }
     showInfo.toggle()
   }
 
   func toggleDanmaku() {
-    guard player.isMaskShow else { return }
+    guard overlayVisible else { return }
     if showDanmaku {
       danmaku.stopDanmakuStream()
       showDanmaku = false

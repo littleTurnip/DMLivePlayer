@@ -54,13 +54,14 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .overlay { DanmakuContainer(coordinator: manager.danmaku, options: manager.danmakuOptions) }
       .ignoresSafeArea(.all)
       .overlay {
-        GestureView(swipeAction: manager.handleSwipe, pressAction: { _ in })
+        GestureOverlay(perform: manager.handleSwipe)
           .focused($focusState, equals: .player)
-          .opacity(!manager.player.isMaskShow ? 1 : 0)
+          .opacity(!manager.overlayVisible ? 1 : 0)
         VideoControllerView(title: title, info: info, recommend: recommend)
           .focused($focusState, equals: .controller)
-          .opacity(manager.player.isMaskShow ? 1 : 0)
+          .opacity(manager.overlayVisible ? 1 : 0)
       }
+      .defaultFocus($focusState, .controller)
       .environmentObject(manager)
       .preferredColorScheme(.dark)
       .alert(
@@ -71,6 +72,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .onMoveCommand(perform: manager.handleKey)
       .onPlayPauseCommand(perform: manager.refreshStream)
       .onExitCommand(perform: manager.handleExit)
+      .onAppear { manager.showOverlay() }
       .onDisappear(perform: manager.destroy)
     }
   }
