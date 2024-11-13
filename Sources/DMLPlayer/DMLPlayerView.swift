@@ -54,7 +54,7 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
       .overlay { DanmakuContainer(coordinator: manager.danmaku, options: manager.danmakuOptions) }
       .ignoresSafeArea(.all)
       .overlay {
-        GestureView(swipeAction: manager.handleSwipe, pressAction: { _ in })
+        GestureOverlay(perform: manager.handleSwipe)
           .focused($focusState, equals: .player)
           .opacity(!manager.overlayVisible ? 1 : 0)
         VideoControllerView(title: title, info: info, recommend: recommend)
