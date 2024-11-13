@@ -21,6 +21,7 @@ public typealias AVPlayer = KSAVPlayer
 
 public class PlayerOptions: KSOptions {
   public var isDisplayCriteriaEnabled: Bool = false
+  public var autoHideDelay: TimeInterval = 10.0
 
   override public func sei(string: String) {}
   override public func updateVideo(refreshRate: Float, isDovi: Bool, formatDescription: CMFormatDescription) {

@@ -125,10 +125,43 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     }
   }
 
+  @MainActor
+  func showOverlay() {
+    overlayVisible = true
+    scheduleOverlayHide()
+  }
+
+  @MainActor
+  func hideOverlay() {
+    showRecommend = false
+    overlayVisible = false
+    cancelOverlayHide()
+  }
+
+  private func scheduleOverlayHide() {
+    let delay = playerOptions.autoHideDelay
+
+    if overlayHideManager == nil {
+      overlayHideManager = DelayActionManager(interval: delay) { [weak self] in
+        await self?.hideOverlay()
+      }
+    }
+    Task {
+      await overlayHideManager?.resetDelay()
+    }
+  }
+
+  private func cancelOverlayHide() {
+    Task {
+      await overlayHideManager?.cancel()
+      overlayHideManager = nil
+    }
+  }
+
   func handleSwipe(_ direction: UISwipeGestureRecognizer.Direction) {
     switch direction {
     default:
-      player.mask(show: true)
+      showOverlay()
     }
   }
 
@@ -138,9 +171,9 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       if !showRecommend {
         showRecommend = true
       }
-      player.mask(show: true)
+      showOverlay()
     default:
-      player.mask(show: true)
+      showOverlay()
     }
   }
 
@@ -149,7 +182,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     if showRecommend {
       showRecommend = false
     } else {
-      player.mask(show: false)
+      hideOverlay()
     }
   }
 }
