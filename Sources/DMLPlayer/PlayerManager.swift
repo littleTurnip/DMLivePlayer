@@ -71,6 +71,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   public func updateOptions(_ player: PlayerOptions, _ danmaku: DanmakuOptions) {
     playerOptions = player
     danmakuOptions = danmaku
+    showDanmaku = danmaku.layer.isAutoPlay
   }
 
   public func subscribeToLibraryItems(_ publisher: AnyPublisher<[any PlayableItem], Never>) {
