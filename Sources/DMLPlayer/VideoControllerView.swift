@@ -66,6 +66,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
           .focused($controllerFocused, equals: .recommend)
       }
     }
+    .defaultFocus($controllerFocused, .controller(.refresh))
     .background(overlayGradient)
     .offset(y: manager.showRecommend ? 60 : recommendHeight - 90)
     .onChange(of: manager.showRecommend) { isVisible in
