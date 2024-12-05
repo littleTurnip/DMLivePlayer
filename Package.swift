@@ -26,19 +26,16 @@ let package = Package(
       dependencies: [
         "DMLPlayerProtocol",
         .ksplayer,
-      ]
-    ),
+      ]),
     .target(
-      name: "DanmakuKit"
-    ),
+      name: "DanmakuKit"),
     .target(
       name: "DMLPlayerProtocol",
       dependencies: [
+        "DanmakuKit",
         .ksplayer,
-      ]
-    ),
-  ]
-)
+      ]),
+  ])
 
 extension Target.Dependency {
   static let ksplayer = Target.Dependency.product(name: "KSPlayer", package: "KSPlayer")

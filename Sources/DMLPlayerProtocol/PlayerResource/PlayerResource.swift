@@ -46,25 +46,25 @@ public protocol PlayableItem: ObservableObject, Identifiable {
   func fetchResource(line: String?, rate: Int?) async -> Resource?
 }
 
-public extension PlayableItem {
-  var id: String { "\(platform.rawValue)-\(roomID)" }
+extension PlayableItem {
+  public var id: String { "\(platform.rawValue)-\(roomID)" }
   var logger: Logger { Logger(subsystem: "DMLPlayer", category: "PlayableItem") }
 }
 
 /// add stream resource related methods
-public extension PlayableItem {
-  var resourceStream: AsyncStream<Resource?> {
+extension PlayableItem {
+  public var resourceStream: AsyncStream<Resource?> {
     AsyncStream { [weak self] continuation in
       self?.resourceContinuation = continuation
     }
   }
 
-  func updateResource(with newResource: Resource?) {
+  public func updateResource(with newResource: Resource?) {
     logger.trace("updateResource")
     resourceContinuation?.yield(newResource)
   }
 
-  func loadResource(line: String? = nil, rate: Int? = nil) {
+  public func loadResource(line: String? = nil, rate: Int? = nil) {
     logger.trace("loadStream id: \(self.id) line: \(line ?? "nil") rate: \(rate ?? 0)")
     Task { @MainActor in
       guard liveInfo.roomStatus != .offline else {
@@ -72,7 +72,7 @@ public extension PlayableItem {
       }
       let streamResource = await self.fetchResource(line: line, rate: rate)
       #if DEBUG
-        debugPrint("resource: \(streamResource.debugDescription)")
+      debugPrint("resource: \(streamResource.debugDescription)")
       #endif
       await MainActor.run {
         currentResource = streamResource
@@ -82,38 +82,38 @@ public extension PlayableItem {
   }
 }
 
-public extension PlayableItem {
-  static func timeAsc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+extension PlayableItem {
+  public static func timeAsc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
     lhs.playerInfo.lastPlay < rhs.playerInfo.lastPlay
   }
 
-  static func timeDesc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+  public static func timeDesc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
     lhs.playerInfo.lastPlay > rhs.playerInfo.lastPlay
   }
 
-  static func playCountAsc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+  public static func playCountAsc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
     lhs.playerInfo.playCount < rhs.playerInfo.playCount
   }
 
-  static func playCountDesc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
+  public static func playCountDesc(lhs: any PlayableItem, rhs: any PlayableItem) -> Bool {
     lhs.playerInfo.playCount > rhs.playerInfo.playCount
   }
 }
 
-public extension PlayableItem {
-  func plusPlayCount() {
+extension PlayableItem {
+  public func plusPlayCount() {
     playerInfo.playCount += 1
   }
 
-  func setCDNLine() {
+  public func setCDNLine() {
     playerInfo.cdnLine = currentResource?.line
   }
 
-  func setLastPlayTime() {
+  public func setLastPlayTime() {
     playerInfo.lastPlay = Date()
   }
 
-  func toggleFav() {
+  public func toggleFav() {
     playerInfo.isFav.toggle()
   }
 }

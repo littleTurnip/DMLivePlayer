@@ -37,5 +37,6 @@ public protocol DanmakuDelegate: DanmakuViewDelegate, Sendable {
   func setDanmakuService(_ service: DanmakuService?)
   func startDanmakuStream(options: DanmakuOptions)
   func stopDanmakuStream()
-  @Sendable func shootDanmaku(_ danmaku: Danmaku, options: DanmakuOptions.Danmaku) async
+  @Sendable
+  func shootDanmaku(_ danmaku: Danmaku, options: DanmakuOptions.Danmaku) async
 }

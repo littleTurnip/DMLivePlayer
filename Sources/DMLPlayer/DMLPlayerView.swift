@@ -20,9 +20,11 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
   @ObservedObject var manager: PlayerManager
 
   @FocusState private var focusState: PlayerFocusState?
+
   private let title: () -> Title
   private let info: () -> Info
   private let recommend: () -> Recommend
+
   public init(
     _ manager: PlayerManager,
     @ViewBuilder title: @escaping () -> Title,
@@ -35,45 +37,38 @@ public struct DMLPlayerView<Title: View, Info: View, Recommend: View>: View {
     self.recommend = recommend
   }
 
-  var confirmButton: some View {
-    Button(Localized.Button[.confirm]) {
-      manager.showNotPlayingAlert = false
-      manager.isVisible = false
+  public var body: some View {
+    if let url = manager.resource?.url {
+      KSVideoPlayer(coordinator: manager.player, url: url, options: manager.playerOptions)
+        .onStateChanged(manager.handlePlayerStateChanged)
+        .background(Color.black)
+        .overlay { DanmakuContainer(coordinator: manager.danmaku, options: manager.danmakuOptions) }
+        .ignoresSafeArea(.all)
+        .overlay {
+          GestureOverlay(perform: manager.handleSwipe)
+            .focused($focusState, equals: .player)
+            .opacity(!manager.overlayVisible ? 1 : 0)
+          VideoControllerView(title: title, info: info, recommend: recommend)
+            .focused($focusState, equals: .controller)
+            .opacity(manager.overlayVisible ? 1 : 0)
+        }
+        .defaultFocus($focusState, .controller)
+        .environmentObject(manager)
+        .preferredColorScheme(.dark)
+        .alert(Localized.Alert[.notPlaying], isPresented: $manager.showNotPlayingAlert, actions: confirmButton)
+        .onMoveCommand(perform: manager.handleKey)
+        .onPlayPauseCommand(perform: manager.refreshStream)
+        .onExitCommand(perform: manager.handleExit)
+        .onAppear { manager.showOverlay() }
+        .onDisappear(perform: manager.destroy)
     }
   }
 
-  public var body: some View {
-    if let url = manager.resource?.url {
-      KSVideoPlayer(
-        coordinator: manager.player,
-        url: url,
-        options: manager.playerOptions
-      )
-      .onStateChanged(manager.handlePlayerStateChanged)
-      .background(Color.black)
-      .overlay { DanmakuContainer(coordinator: manager.danmaku, options: manager.danmakuOptions) }
-      .ignoresSafeArea(.all)
-      .overlay {
-        GestureOverlay(perform: manager.handleSwipe)
-          .focused($focusState, equals: .player)
-          .opacity(!manager.overlayVisible ? 1 : 0)
-        VideoControllerView(title: title, info: info, recommend: recommend)
-          .focused($focusState, equals: .controller)
-          .opacity(manager.overlayVisible ? 1 : 0)
-      }
-      .defaultFocus($focusState, .controller)
-      .environmentObject(manager)
-      .preferredColorScheme(.dark)
-      .alert(
-        Localized.Alert[.notPlaying],
-        isPresented: $manager.showNotPlayingAlert,
-        actions: { confirmButton }
-      )
-      .onMoveCommand(perform: manager.handleKey)
-      .onPlayPauseCommand(perform: manager.refreshStream)
-      .onExitCommand(perform: manager.handleExit)
-      .onAppear { manager.showOverlay() }
-      .onDisappear(perform: manager.destroy)
+  @ViewBuilder
+  func confirmButton() -> some View {
+    Button(Localized.Button[.confirm]) {
+      manager.showNotPlayingAlert = false
+      manager.isVisible = false
     }
   }
 }
