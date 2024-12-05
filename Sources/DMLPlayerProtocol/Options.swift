@@ -9,7 +9,7 @@ import AVFoundation
 import Foundation
 import KSPlayer
 #if os(tvOS)
-  import DisplayCriteria
+import DisplayCriteria
 #endif
 import UIKit
 
@@ -20,7 +20,7 @@ public typealias AVPlayer = KSAVPlayer
 // MARK: - PlayerOptions
 
 public class PlayerOptions: KSOptions {
-  public var isDisplayCriteriaEnabled: Bool = false
+  public var isDisplayCriteriaEnabled = false
   public var autoHideDelay: TimeInterval = 10.0
 
   override public func sei(string: String) {}
@@ -47,17 +47,15 @@ public struct DanmakuOptions {
     isColor: Bool,
     blockKeywords: Set<String>
   ) {
-    danmaku = Self.Danmaku(
+    self.danmaku = Self.Danmaku(
       speed: speed,
       isColor: isColor,
-      fontSize: fontSize
-    )
-    layer = Self.Layer(
+      fontSize: fontSize)
+    self.layer = Self.Layer(
       viewHeight: viewHeight,
       opacity: opacity,
       trackHeight: trackHeight,
-      isAutoPlay: isAutoPlay
-    )
+      isAutoPlay: isAutoPlay)
     self.blockKeywords = blockKeywords
   }
 
@@ -68,8 +66,8 @@ public struct DanmakuOptions {
   }
 }
 
-public extension DanmakuOptions {
-  struct Layer {
+extension DanmakuOptions {
+  public struct Layer {
     public var viewHeight: CGFloat
     public var opacity: Double
     public var trackHeight: CGFloat
@@ -88,7 +86,7 @@ public extension DanmakuOptions {
     }
   }
 
-  struct Danmaku {
+  public struct Danmaku {
     public var speed: Double
     public var isColor: Bool
     public var fontSize: CGFloat
@@ -105,8 +103,8 @@ public extension DanmakuOptions {
   }
 }
 
-public extension DanmakuOptions {
-  static var `default`: Self = .init(
+extension DanmakuOptions {
+  public static var `default`: Self = .init(
     viewHeight: 550,
     opacity: 0.8,
     trackHeight: 1.4,
@@ -114,6 +112,5 @@ public extension DanmakuOptions {
     speed: 10,
     isAutoPlay: true,
     isColor: true,
-    blockKeywords: []
-  )
+    blockKeywords: [])
 }

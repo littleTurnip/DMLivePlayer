@@ -39,7 +39,7 @@ extension RoomStatus: Comparable {
   public static func < (lhs: RoomStatus, rhs: RoomStatus) -> Bool {
     // 自定义排序逻辑
     switch (lhs, rhs) {
-    case (.offline, .live), (.replay, .live), (.offline, .replay):
+    case (.offline, .live), (.offline, .replay), (.replay, .live):
       true
     default:
       false

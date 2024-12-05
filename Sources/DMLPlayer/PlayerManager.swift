@@ -15,15 +15,6 @@ import SwiftUI
 
 @MainActor
 public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
-  let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
-
-  let player: KSVideoPlayer.Coordinator
-  let danmaku: DanmakuContainer.Coordinator
-
-  private var cancellables: Set<AnyCancellable> = []
-  private var overlayHideManager: DelayActionManager?
-  private var retryStreamIndex = -1
-
   public var playerOptions: PlayerOptions
   public var danmakuOptions: DanmakuOptions
 
@@ -34,11 +25,20 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
   @Published public var overlayVisible = false
   @Published public var showRecommend = false
 
+  let logger = Logger(subsystem: "DMLPlayer", category: "Player.Viewmodel")
+
+  let player: KSVideoPlayer.Coordinator
+  let danmaku: DanmakuContainer.Coordinator
+
   @Published var resource: (any Resource)?
   @Published var showInfo = false
   @Published var showDanmaku: Bool
   @Published var showUnfavConfirmation = false
   @Published var showNotPlayingAlert = false
+
+  private var cancellables: Set<AnyCancellable> = []
+  private var overlayHideManager: DelayActionManager?
+  private var retryStreamIndex = -1
 
   public init(playerOptions: PlayerOptions? = nil, danmakuOptions: DanmakuOptions = DanmakuOptions.default) {
     if let playerOptions {
@@ -47,9 +47,9 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
       self.playerOptions = PlayerOptions()
     }
     self.danmakuOptions = danmakuOptions
-    showDanmaku = danmakuOptions.layer.isAutoPlay
-    player = KSVideoPlayer.Coordinator()
-    danmaku = DanmakuContainer.Coordinator()
+    self.showDanmaku = danmakuOptions.layer.isAutoPlay
+    self.player = KSVideoPlayer.Coordinator()
+    self.danmaku = DanmakuContainer.Coordinator()
   }
 
   deinit {
@@ -104,7 +104,7 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     showRecommend = false
     retryStreamIndex = -1
     #if DEBUG
-      debugPrint(currentItem?.id ?? "item is nil")
+    debugPrint(currentItem?.id ?? "item is nil")
     #endif
   }
 
@@ -112,17 +112,20 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
 
   func handlePlayerStateChanged(_ layer: KSPlayerLayer, _ state: KSPlayerState) {
     #if DEBUG
-      debugPrint("PlayerViewModel.handlePlayerStateChanged: \(state)")
+    debugPrint("PlayerViewModel.handlePlayerStateChanged: \(state)")
     #endif
     switch state {
     case .buffering:
       break
+
     case .bufferFinished:
       Task { @MainActor in
         currentItem?.setCDNLine()
       }
+
     case .error:
       getNextStream()
+
     default:
       break
     }
@@ -139,6 +142,37 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     showRecommend = false
     overlayVisible = false
     cancelOverlayHide()
+  }
+
+  func handleSwipe(_ direction: UISwipeGestureRecognizer.Direction) {
+    switch direction {
+    default:
+      showOverlay()
+    }
+  }
+
+  func handleKey(_ move: MoveCommandDirection) {
+    switch move {
+    case .down:
+      if !showRecommend {
+        showRecommend = true
+      }
+      showOverlay()
+
+    default:
+      showOverlay()
+    }
+  }
+
+  func handleExit() {
+    guard overlayVisible else { isVisible = false
+      return
+    }
+    if showRecommend {
+      showRecommend = false
+    } else {
+      hideOverlay()
+    }
   }
 
   private func scheduleOverlayHide() {
@@ -158,34 +192,6 @@ public class PlayerManager: PlayerProtocol, ObservableObject, Sendable {
     Task {
       await overlayHideManager?.cancel()
       overlayHideManager = nil
-    }
-  }
-
-  func handleSwipe(_ direction: UISwipeGestureRecognizer.Direction) {
-    switch direction {
-    default:
-      showOverlay()
-    }
-  }
-
-  func handleKey(_ move: MoveCommandDirection) {
-    switch move {
-    case .down:
-      if !showRecommend {
-        showRecommend = true
-      }
-      showOverlay()
-    default:
-      showOverlay()
-    }
-  }
-
-  func handleExit() {
-    guard overlayVisible else { isVisible = false; return }
-    if showRecommend {
-      showRecommend = false
-    } else {
-      hideOverlay()
     }
   }
 }

@@ -13,6 +13,7 @@ public typealias Action = (UISwipeGestureRecognizer.Direction) -> Void
 
 public struct GestureOverlay: UIViewRepresentable {
   let swipeAction: Action
+
   public init(perform swipeAction: @escaping Action) {
     self.swipeAction = swipeAction
   }
@@ -46,7 +47,8 @@ public class TVGestureHelper: UIControl {
     fatalError("init(coder:) has not been implemented")
   }
 
-  @objc private func handleSwipeGesture(gesture: UIGestureRecognizer) {
+  @objc
+  private func handleSwipeGesture(gesture: UIGestureRecognizer) {
     guard let swipeGesture = gesture as? UISwipeGestureRecognizer else { return }
     swipeAction(swipeGesture.direction)
   }

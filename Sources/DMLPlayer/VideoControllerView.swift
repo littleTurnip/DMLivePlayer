@@ -33,6 +33,7 @@ extension ControllerFocusState {
 @available(tvOS 16, *)
 struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   @EnvironmentObject var manager: PlayerManager
+
   @State private var isLineMenuVisible = false
   @State private var isResMenuVisible = false
   @State private var recommendHeight: CGFloat = 0
@@ -41,6 +42,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   private let title: Title
   private let info: Info
   private let recommend: Recommend
+
   init(
     @ViewBuilder title: () -> Title,
     @ViewBuilder info: () -> Info,
@@ -130,8 +132,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
                 if rate.id == stream.rate { Image(systemName: "checkmark") }
                 Text(rate.resolution)
               }
-            }
-          )
+            })
         }
       }
 
@@ -162,8 +163,7 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
                 if line.id == stream.line { Image(systemName: "checkmark") }
                 Text(line.cdnName)
               }
-            }
-          )
+            })
         }
       }
 
@@ -187,27 +187,25 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
       label: {
         Image(systemName: "list.bullet.rectangle")
           .symbolVariant(manager.showDanmaku ? .fill : .none)
-      }
-    )
+      })
   }
 
   private var infoPanel: some View {
     Button(
       action: manager.toggleInfo,
-      label: { Image(systemName: "info.circle") }
-    )
-    .fullScreenCover(isPresented: $manager.showInfo) {
-      ZStack {
-        VStack(alignment: .leading) { mediaInfo }
-          .frame(maxWidth: 500, alignment: .topLeading)
-          .font(consoleFont)
-          .padding(10)
-          .background(Color.black.opacity(0.8))
-          .foregroundStyle(.white)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
+      label: { Image(systemName: "info.circle") })
+      .fullScreenCover(isPresented: $manager.showInfo) {
+        ZStack {
+          VStack(alignment: .leading) { mediaInfo }
+            .frame(maxWidth: 500, alignment: .topLeading)
+            .font(consoleFont)
+            .padding(10)
+            .background(Color.black.opacity(0.8))
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-    }
   }
 
   private var mediaInfo: some View {
@@ -238,14 +236,14 @@ private let overlayGradient = LinearGradient(
     Gradient.Stop(color: .black.opacity(0.85), location: 0.7),
   ],
   startPoint: .top,
-  endPoint: .bottom
-)
+  endPoint: .bottom)
 
 // MARK: VideoControllerView.ControllerButtonStyle
 
-private extension VideoControllerView {
+extension VideoControllerView {
   private struct ControllerButtonStyle: ButtonStyle {
     @Environment(\.isFocused) private var isFocused
+
     func makeBody(configuration: Configuration) -> some View {
       configuration.label
         .padding(10)

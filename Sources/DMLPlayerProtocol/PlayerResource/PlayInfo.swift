@@ -8,11 +8,11 @@
 import Foundation
 
 public struct PlayInfo: Sendable {
-  public var isFav: Bool = false
+  public var isFav = false
   public var cdnLine: String?
-  public var playCount: Int = 0
-  public var lastPlay: Date = .init()
-  public var isSync: Bool = false
+  public var playCount = 0
+  public var lastPlay = Date()
+  public var isSync = false
   public init(
     isFav: Bool = false,
     playCount: Int = 0,

@@ -30,6 +30,7 @@ struct CustomMenu<Content: View>: View {
 
 struct CustomMenuButtonStyle: ButtonStyle {
   @Environment(\.isFocused) private var isFocused
+
   func makeBody(configuration: Configuration) -> some View {
     configuration.label
       .padding(.horizontal, 40)
