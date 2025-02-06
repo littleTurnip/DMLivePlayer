@@ -211,7 +211,6 @@ struct VideoControllerView<Title: View, Info: View, Recommend: View>: View {
   private var mediaInfo: some View {
     Group {
       Text("id: \(manager.currentItem?.id ?? "N/A")")
-      Text("helperID: \(manager.currentItem?.helperID ?? "N/A")")
       Text("playCount: \(manager.currentItem?.playerInfo.playCount ?? 0)")
       Text("line: \(manager.resource?.line ?? "N/A")")
       Text("rate: \(manager.resource?.rate ?? 0)")
