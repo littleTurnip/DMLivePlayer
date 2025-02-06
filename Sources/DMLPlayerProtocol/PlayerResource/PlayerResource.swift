@@ -11,16 +11,9 @@ import SwiftUI
 
 public protocol PlayableItem: ObservableObject, Identifiable {
   associatedtype LiveInfo: RoomInfo
-  associatedtype Platform: RawRepresentable<String>
   associatedtype PlayerPlaylist: Playlist
   var id: String { get }
-  var platform: Platform { get }
-  var roomID: String { get }
-  var helperID: String? { get }
   var liveInfo: LiveInfo { get set }
-
-  // MARK: - local properties
-
   var playerInfo: PlayInfo { get set }
   var playlists: Set<PlayerPlaylist> { get }
   var currentResource: Resource? { get set }
@@ -35,9 +28,11 @@ public protocol PlayableItem: ObservableObject, Identifiable {
 
   @MainActor
   func play(with player: any PlayerProtocol)
+
   /// method to update livestream resource
   /// - Parameter newResource: `PlayerResource` object
   func updateResource(with newResource: Resource?)
+
   /// fetch livestream resource
   /// - Parameters:
   ///  - line: Name string representing the CDN line
@@ -47,7 +42,6 @@ public protocol PlayableItem: ObservableObject, Identifiable {
 }
 
 extension PlayableItem {
-  public var id: String { "\(platform.rawValue)-\(roomID)" }
   var logger: Logger { Logger(subsystem: "DMLPlayer", category: "PlayableItem") }
 }
 

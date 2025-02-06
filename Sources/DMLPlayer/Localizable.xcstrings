@@ -35,19 +35,14 @@
     },
     "Audio Bitrate: %@ KB/s" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Audio Bitrate: %@ KB/s"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Audio Bitrate: %@ KB/s"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "button.cancel" : {
       "localizations" : {
@@ -99,19 +94,14 @@
     },
     "FPS: %@" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "FPS: %@"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "FPS: %@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Frame Drop: %u" : {
       "localizations" : {
@@ -121,161 +111,99 @@
             "value" : "Frame Drop: %u"
           }
         }
-      }
-    },
-    "helperID: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "helperID: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "helperID: %@"
-          }
-        }
-      }
+      },
+      "shouldTranslate" : false
     },
     "id: %@" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "id: %@"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "id: %@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "line: %@" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "line: %@"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "line: %@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "playCount: %lld" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "playCount: %lld"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "playCount: %lld"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "rate: %lld" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rate: %lld"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "rate: %lld"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Resolution: %d x %d" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resolution: %d x %d"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Resolution: %d x %d"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Resolution: %lf x %lf" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Resolution: %1$lf x %2$lf"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Resolution: %1$lf x %2$lf"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Resolution: %lld x %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Resolution: %1$lld x %2$lld"
-          }
-        }
-      }
+      "shouldTranslate" : false
     },
     "Video Bitrate: %@ MB/s" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Video Bitrate: %@ MB/s"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Video Bitrate: %@ MB/s"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Video Codec: %@" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Video Codec: %@"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Video Codec: %@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

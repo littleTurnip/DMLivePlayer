@@ -3,37 +3,39 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B2243682BC3B9F900374DB6 /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2243672BC3B9F900374DB6 /* DemoApp.swift */; };
-		1B22436A2BC3B9F900374DB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2243692BC3B9F900374DB6 /* ContentView.swift */; };
-		1B6347D42BFCAEB00094D380 /* PlayItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B6347D32BFCAEB00094D380 /* PlayItem.swift */; };
-		1B6347D62BFCAEC50094D380 /* DanmakuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B6347D52BFCAEC50094D380 /* DanmakuService.swift */; };
-		1BB39C0D2BC3BBB200E53285 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1BB39C0C2BC3BBB200E53285 /* Preview Assets.xcassets */; };
-		1BB39C102BC3BE1000E53285 /* DanmakuKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB39C0F2BC3BE1000E53285 /* DanmakuKit */; };
-		1BB39C122BC3BE1400E53285 /* DMLPlayer in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB39C112BC3BE1400E53285 /* DMLPlayer */; };
-		1BB39C142BC3BE1600E53285 /* DMLPlayerProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB39C132BC3BE1600E53285 /* DMLPlayerProtocol */; };
+		1BA7E1022D533F5200E6D63F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1BA7E1012D533F5200E6D63F /* Assets.xcassets */; };
+		1BA7E1052D533F5200E6D63F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1BA7E1042D533F5200E6D63F /* Preview Assets.xcassets */; };
+		1BA7E1242D53447900E6D63F /* DanmakuKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1BA7E1232D53447900E6D63F /* DanmakuKit */; };
+		1BA7E1262D53447900E6D63F /* DMLPlayer in Frameworks */ = {isa = PBXBuildFile; productRef = 1BA7E1252D53447900E6D63F /* DMLPlayer */; };
+		1BA7E1282D53447900E6D63F /* DMLPlayerProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 1BA7E1272D53447900E6D63F /* DMLPlayerProtocol */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1B2243642BC3B9F900374DB6 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1B2243672BC3B9F900374DB6 /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
-		1B2243692BC3B9F900374DB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		1B6347D32BFCAEB00094D380 /* PlayItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayItem.swift; sourceTree = "<group>"; };
-		1B6347D52BFCAEC50094D380 /* DanmakuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuService.swift; sourceTree = "<group>"; };
-		1BB39C0C2BC3BBB200E53285 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		1BA7E0FB2D533F5100E6D63F /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BA7E1012D533F5200E6D63F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1BA7E1042D533F5200E6D63F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		1BA7E0FC2D533F5100E6D63F /* Demo */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Demo;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
-		1B2243612BC3B9F900374DB6 /* Frameworks */ = {
+		1BA7E0F82D533F5100E6D63F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1BB39C102BC3BE1000E53285 /* DanmakuKit in Frameworks */,
-				1BB39C122BC3BE1400E53285 /* DMLPlayer in Frameworks */,
-				1BB39C142BC3BE1600E53285 /* DMLPlayerProtocol in Frameworks */,
+				1BA7E1242D53447900E6D63F /* DanmakuKit in Frameworks */,
+				1BA7E1262D53447900E6D63F /* DMLPlayer in Frameworks */,
+				1BA7E1282D53447900E6D63F /* DMLPlayerProtocol in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,54 +45,47 @@
 		1B22435B2BC3B9F900374DB6 = {
 			isa = PBXGroup;
 			children = (
-				1B6347D52BFCAEC50094D380 /* DanmakuService.swift */,
-				1B6347D32BFCAEB00094D380 /* PlayItem.swift */,
-				1B2243672BC3B9F900374DB6 /* DemoApp.swift */,
-				1B2243692BC3B9F900374DB6 /* ContentView.swift */,
-				1BB39C0C2BC3BBB200E53285 /* Preview Assets.xcassets */,
+				1BA7E1012D533F5200E6D63F /* Assets.xcassets */,
+				1BA7E1042D533F5200E6D63F /* Preview Assets.xcassets */,
+				1BA7E0FC2D533F5100E6D63F /* Demo */,
 				1B2243652BC3B9F900374DB6 /* Products */,
-				1BB39C0E2BC3BE1000E53285 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		1B2243652BC3B9F900374DB6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1B2243642BC3B9F900374DB6 /* Demo.app */,
+				1BA7E0FB2D533F5100E6D63F /* Demo.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		1BB39C0E2BC3BE1000E53285 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1B2243632BC3B9F900374DB6 /* Demo */ = {
+		1BA7E0FA2D533F5100E6D63F /* Demo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1B2243722BC3B9FA00374DB6 /* Build configuration list for PBXNativeTarget "Demo" */;
+			buildConfigurationList = 1BA7E1062D533F5200E6D63F /* Build configuration list for PBXNativeTarget "Demo" */;
 			buildPhases = (
-				1B2243602BC3B9F900374DB6 /* Sources */,
-				1B2243612BC3B9F900374DB6 /* Frameworks */,
-				1B2243622BC3B9F900374DB6 /* Resources */,
+				1BA7E0F72D533F5100E6D63F /* Sources */,
+				1BA7E0F82D533F5100E6D63F /* Frameworks */,
+				1BA7E0F92D533F5100E6D63F /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				1BA7E0FC2D533F5100E6D63F /* Demo */,
+			);
 			name = Demo;
 			packageProductDependencies = (
-				1BB39C0F2BC3BE1000E53285 /* DanmakuKit */,
-				1BB39C112BC3BE1400E53285 /* DMLPlayer */,
-				1BB39C132BC3BE1600E53285 /* DMLPlayerProtocol */,
+				1BA7E1232D53447900E6D63F /* DanmakuKit */,
+				1BA7E1252D53447900E6D63F /* DMLPlayer */,
+				1BA7E1272D53447900E6D63F /* DMLPlayerProtocol */,
 			);
 			productName = Demo;
-			productReference = 1B2243642BC3B9F900374DB6 /* Demo.app */;
+			productReference = 1BA7E0FB2D533F5100E6D63F /* Demo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -100,16 +95,16 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1520;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
-					1B2243632BC3B9F900374DB6 = {
-						CreatedOnToolsVersion = 15.2;
+					1BA7E0FA2D533F5100E6D63F = {
+						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
-			buildConfigurationList = 1B22435F2BC3B9F900374DB6 /* Build configuration list for PBXProject "Demo" */;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = 1B22435F2BC3B9F900374DB6 /* Build configuration list for PBXProject "DemoApp" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -117,35 +112,35 @@
 				Base,
 			);
 			mainGroup = 1B22435B2BC3B9F900374DB6;
+			packageReferences = (
+			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 1B2243652BC3B9F900374DB6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1B2243632BC3B9F900374DB6 /* Demo */,
+				1BA7E0FA2D533F5100E6D63F /* Demo */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		1B2243622BC3B9F900374DB6 /* Resources */ = {
+		1BA7E0F92D533F5100E6D63F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1BB39C0D2BC3BBB200E53285 /* Preview Assets.xcassets in Resources */,
+				1BA7E1052D533F5200E6D63F /* Preview Assets.xcassets in Resources */,
+				1BA7E1022D533F5200E6D63F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1B2243602BC3B9F900374DB6 /* Sources */ = {
+		1BA7E0F72D533F5100E6D63F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B22436A2BC3B9F900374DB6 /* ContentView.swift in Sources */,
-				1B6347D62BFCAEC50094D380 /* DanmakuService.swift in Sources */,
-				1B6347D42BFCAEB00094D380 /* PlayItem.swift in Sources */,
-				1B2243682BC3B9F900374DB6 /* DemoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,15 +266,15 @@
 			};
 			name = Release;
 		};
-		1B2243732BC3B9FA00374DB6 /* Debug */ = {
+		1BA7E1072D533F5200E6D63F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Manual;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -289,24 +284,25 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = DMLivePlayer.Demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.DMLivePlayer.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 16.6;
 			};
 			name = Debug;
 		};
-		1B2243742BC3B9FA00374DB6 /* Release */ = {
+		1BA7E1082D533F5200E6D63F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Manual;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"\"";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -316,19 +312,19 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = DMLivePlayer.Demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.DMLivePlayer.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 16.6;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1B22435F2BC3B9F900374DB6 /* Build configuration list for PBXProject "Demo" */ = {
+		1B22435F2BC3B9F900374DB6 /* Build configuration list for PBXProject "DemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B2243702BC3B9FA00374DB6 /* Debug */,
@@ -337,11 +333,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1B2243722BC3B9FA00374DB6 /* Build configuration list for PBXNativeTarget "Demo" */ = {
+		1BA7E1062D533F5200E6D63F /* Build configuration list for PBXNativeTarget "Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B2243732BC3B9FA00374DB6 /* Debug */,
-				1B2243742BC3B9FA00374DB6 /* Release */,
+				1BA7E1072D533F5200E6D63F /* Debug */,
+				1BA7E1082D533F5200E6D63F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -349,15 +345,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1BB39C0F2BC3BE1000E53285 /* DanmakuKit */ = {
+		1BA7E1232D53447900E6D63F /* DanmakuKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DanmakuKit;
 		};
-		1BB39C112BC3BE1400E53285 /* DMLPlayer */ = {
+		1BA7E1252D53447900E6D63F /* DMLPlayer */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DMLPlayer;
 		};
-		1BB39C132BC3BE1600E53285 /* DMLPlayerProtocol */ = {
+		1BA7E1272D53447900E6D63F /* DMLPlayerProtocol */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DMLPlayerProtocol;
 		};
